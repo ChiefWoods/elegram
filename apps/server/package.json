@@ -5,8 +5,10 @@
     "dev": "bun run --hot src/index.ts"
   },
   "dependencies": {
+    "@better-auth/passkey": "^1.6.10",
     "@prisma/adapter-pg": "^7.8.0",
     "@prisma/client": "^7.8.0",
+    "better-auth": "^1.6.10",
     "dotenv": "^17.4.2",
     "hono": "^4.12.18",
     "pg": "^8.20.0"

@@ -7,9 +7,11 @@ import { env } from "./env";
 import { auth } from "./lib/auth";
 import authRouter from "./routes/auth";
 import conversationsRouter from "./routes/conversations";
+import eventsRouter from "./routes/events";
 import healthRouter from "./routes/health";
 import meRouter from "./routes/me";
 import messagesRouter from "./routes/messages";
+import presenceRouter from "./routes/presence";
 import uploadsRouter from "./routes/uploads";
 import usersRouter from "./routes/users";
 
@@ -47,6 +49,8 @@ const routes = app
   .route("/api/me", meRouter)
   .route("/api/users", usersRouter)
   .route("/api/uploads", uploadsRouter)
+  .route("/api/events", eventsRouter)
+  .route("/api/presence", presenceRouter)
   .route("/api/conversations/:id/messages", messagesRouter)
   .route("/api/conversations", conversationsRouter)
   .notFound((c) => c.json({ error: "Not Found" }, 404));

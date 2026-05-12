@@ -16,6 +16,7 @@ const EnvSchema = z.object({
     .optional()
     .transform((v) => (v ? v : undefined))
     .pipe(z.url().optional()),
+  REDIS_URL: z.string().min(1),
 });
 
 const parsed = EnvSchema.safeParse(process.env);

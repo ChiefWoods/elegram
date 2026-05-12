@@ -6,6 +6,7 @@ import { username } from "better-auth/plugins";
 import { prisma } from "./prisma";
 
 export const auth = betterAuth({
+  basePath: "/auth",
   database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),
@@ -22,3 +23,8 @@ export const auth = betterAuth({
   },
   trustedOrigins: process.env.CORS_ORIGIN ? [process.env.CORS_ORIGIN] : [],
 });
+
+export type AuthType = {
+  user: typeof auth.$Infer.Session.user | null;
+  session: typeof auth.$Infer.Session.session | null;
+};

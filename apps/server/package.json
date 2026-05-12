@@ -2,7 +2,11 @@
   "name": "server",
   "type": "module",
   "scripts": {
-    "dev": "bun run --hot src/index.ts"
+    "dev": "bun run --hot src/index.ts",
+    "db:migrate:dev": "bunx --bun prisma migrate dev",
+    "db:migrate:deploy": "bunx --bun prisma migrate deploy",
+    "db:generate": "bunx --bun prisma generate",
+    "db:studio": "bunx --bun prisma studio"
   },
   "dependencies": {
     "@better-auth/passkey": "^1.6.10",

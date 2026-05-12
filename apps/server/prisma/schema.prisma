@@ -15,20 +15,95 @@ datasource db {
 model User {
   id              String    @id
   name            String
-  email           String
+  email           String    @db.VarChar(254)
   emailVerified   Boolean   @default(false)
   image           String?
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
   username        String?
   displayUsername String?
+  displayName     String    @db.VarChar(50)
+  bio             String?   @db.VarChar(200)
+  avatarKey       String?
+  lastSeenAt      DateTime?
   sessions        Session[]
   accounts        Account[]
   passkeys        Passkey[]
+  members         ConversationMember[]
+  messages        Message[]
+  avatar          Asset?    @relation("UserAvatar", fields: [avatarKey], references: [key], onDelete: SetNull)
+  uploadedAssets  Asset[]   @relation("AssetUploader")
 
   @@unique([email])
   @@unique([username])
   @@map("user")
+}
+
+model Asset {
+  key                 String         @id
+  uploaderId          String?
+  mime                String
+  size                Int
+  createdAt           DateTime       @default(now())
+  uploader            User?          @relation("AssetUploader", fields: [uploaderId], references: [id], onDelete: SetNull)
+  userAvatars         User[]         @relation("UserAvatar")
+  conversationAvatars Conversation[] @relation("ConversationAvatar")
+  messageAttachments  Message[]      @relation("MessageAttachment")
+
+  @@index([uploaderId, createdAt])
+  @@map("asset")
+}
+
+model Conversation {
+  id            String               @id @default(cuid())
+  isGroup       Boolean              @default(false)
+  title         String?              @db.VarChar(100)
+  description   String?              @db.VarChar(500)
+  avatarKey     String?
+  dmKey         String?              @unique
+  createdAt     DateTime             @default(now())
+  lastMessageAt DateTime?
+  members       ConversationMember[]
+  messages      Message[]
+  avatar        Asset?               @relation("ConversationAvatar", fields: [avatarKey], references: [key], onDelete: SetNull)
+
+  @@map("conversation")
+}
+
+enum ConversationRole {
+  OWNER
+  ADMIN
+  MEMBER
+}
+
+model ConversationMember {
+  conversationId String
+  userId         String
+  role           ConversationRole @default(MEMBER)
+  joinedAt       DateTime         @default(now())
+  lastReadAt     DateTime?
+  conversation   Conversation     @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user           User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([conversationId, userId])
+  @@index([userId])
+  @@map("conversation_member")
+}
+
+model Message {
+  id             String       @id @default(cuid())
+  conversationId String
+  senderId       String?
+  body           String?      @db.VarChar(4000)
+  attachmentKey  String?
+  createdAt      DateTime     @default(now())
+  editedAt       DateTime?
+  deletedAt      DateTime?
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender         User?        @relation(fields: [senderId], references: [id], onDelete: SetNull)
+  attachment     Asset?       @relation("MessageAttachment", fields: [attachmentKey], references: [key], onDelete: SetNull)
+
+  @@map("message")
 }
 
 model Session {

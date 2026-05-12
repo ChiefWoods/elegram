@@ -10,6 +10,7 @@ import conversationsRouter from "./routes/conversations";
 import healthRouter from "./routes/health";
 import meRouter from "./routes/me";
 import messagesRouter from "./routes/messages";
+import uploadsRouter from "./routes/uploads";
 import usersRouter from "./routes/users";
 
 const app = new Hono<{ Variables: AuthzVariables }>({
@@ -45,6 +46,7 @@ const routes = app
   .route("/health", healthRouter)
   .route("/api/me", meRouter)
   .route("/api/users", usersRouter)
+  .route("/api/uploads", uploadsRouter)
   .route("/api/conversations/:id/messages", messagesRouter)
   .route("/api/conversations", conversationsRouter)
   .notFound((c) => c.json({ error: "Not Found" }, 404));

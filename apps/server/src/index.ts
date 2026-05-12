@@ -33,9 +33,11 @@ app.use("*", async (c, next) => {
   return next();
 });
 
-app.route("/auth", authRouter);
-app.route("/health", healthRouter);
+app
+  .route("/auth", authRouter)
+  .route("/health", healthRouter)
+  .notFound((c) => c.json({ error: "Not Found" }, 404));
 
-app.notFound((c) => c.json({ error: "Not Found" }, 404));
+export type AppType = typeof app;
 
 export default app;

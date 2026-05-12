@@ -36,4 +36,6 @@ app.use("*", async (c, next) => {
 app.route("/auth", authRouter);
 app.route("/health", healthRouter);
 
+app.notFound((c) => c.json({ error: "Not Found" }, 404));
+
 export default app;

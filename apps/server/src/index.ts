@@ -1,12 +1,18 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 
-import { env } from "./env";
-import { auth, AuthType } from "./lib/auth";
-import authRouter from "./routes/auth";
-import healthRouter from "./routes/health";
+import type { AuthzVariables } from "./lib/authz";
 
-const app = new Hono<{ Variables: AuthType }>({
+import { env } from "./env";
+import { auth } from "./lib/auth";
+import authRouter from "./routes/auth";
+import conversationsRouter from "./routes/conversations";
+import healthRouter from "./routes/health";
+import meRouter from "./routes/me";
+import messagesRouter from "./routes/messages";
+import usersRouter from "./routes/users";
+
+const app = new Hono<{ Variables: AuthzVariables }>({
   strict: false,
 });
 
@@ -34,11 +40,15 @@ app.use("*", async (c, next) => {
   return next();
 });
 
-app
+const routes = app
   .route("/auth", authRouter)
   .route("/health", healthRouter)
+  .route("/api/me", meRouter)
+  .route("/api/users", usersRouter)
+  .route("/api/conversations/:id/messages", messagesRouter)
+  .route("/api/conversations", conversationsRouter)
   .notFound((c) => c.json({ error: "Not Found" }, 404));
 
-export type AppType = typeof app;
+export type AppType = typeof routes;
 
 export default app;

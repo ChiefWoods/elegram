@@ -22,7 +22,6 @@ model User {
   updatedAt       DateTime  @updatedAt
   username        String?
   displayUsername String?
-  displayName     String    @db.VarChar(50)
   bio             String?   @db.VarChar(200)
   avatarKey       String?
   lastSeenAt      DateTime?

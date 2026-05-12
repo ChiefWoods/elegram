@@ -1,25 +1,16 @@
-import "dotenv/config";
 import { S3Client } from "bun";
 
-const endpoint = process.env.S3_ENDPOINT;
-const accessKeyId = process.env.S3_ACCESS_KEY;
-const secretAccessKey = process.env.S3_SECRET_KEY;
-const bucket = process.env.S3_BUCKET;
-const region = process.env.S3_REGION ?? "us-east-1";
-
-if (!endpoint || !accessKeyId || !secretAccessKey || !bucket) {
-  throw new Error("Missing S3 env vars: S3_ENDPOINT, S3_ACCESS_KEY, S3_SECRET_KEY, S3_BUCKET");
-}
+import { env } from "../env";
 
 export const s3 = new S3Client({
-  endpoint,
-  accessKeyId,
-  secretAccessKey,
-  bucket,
-  region,
+  endpoint: env.S3_ENDPOINT,
+  accessKeyId: env.S3_ACCESS_KEY,
+  secretAccessKey: env.S3_SECRET_KEY,
+  bucket: env.S3_BUCKET,
+  region: env.S3_REGION,
 });
 
-export const S3_PUBLIC_URL = process.env.S3_PUBLIC_URL ?? "";
+export const S3_PUBLIC_URL = env.S3_PUBLIC_URL ?? "";
 
 export type PresignPutOptions = {
   key: string;

@@ -3,6 +3,7 @@ import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { username } from "better-auth/plugins";
 
+import { env } from "../env";
 import { prisma } from "./prisma";
 
 export const auth = betterAuth({
@@ -21,7 +22,7 @@ export const auth = betterAuth({
     window: 60,
     max: 10,
   },
-  trustedOrigins: process.env.CORS_ORIGIN ? [process.env.CORS_ORIGIN] : [],
+  trustedOrigins: [env.CORS_ORIGIN],
 });
 
 export type AuthType = {

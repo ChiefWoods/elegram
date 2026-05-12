@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 
+import { env } from "./env";
 import { auth, AuthType } from "./lib/auth";
 import authRouter from "./routes/auth";
 import healthRouter from "./routes/health";
@@ -12,7 +13,7 @@ const app = new Hono<{ Variables: AuthType }>({
 app.use(
   "*",
   cors({
-    origin: process.env.CORS_ORIGIN ?? "",
+    origin: env.CORS_ORIGIN,
     allowHeaders: ["Content-Type", "Authorization"],
     allowMethods: ["POST", "GET", "PATCH", "DELETE", "OPTIONS"],
     exposeHeaders: ["Content-Length"],

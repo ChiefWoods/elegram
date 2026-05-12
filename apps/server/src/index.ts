@@ -3,6 +3,7 @@ import { cors } from "hono/cors";
 
 import { auth, AuthType } from "./lib/auth";
 import authRouter from "./routes/auth";
+import healthRouter from "./routes/health";
 
 const app = new Hono<{ Variables: AuthType }>({
   strict: false,
@@ -33,5 +34,6 @@ app.use("*", async (c, next) => {
 });
 
 app.route("/auth", authRouter);
+app.route("/health", healthRouter);
 
 export default app;

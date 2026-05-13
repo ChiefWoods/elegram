@@ -7,7 +7,7 @@
   },
   "scripts": {
     "dev": "bun run --hot src/index.ts",
-    "test": "bun run test:unit && bun run test:integration",
+    "test": "concurrently \"bun run test:unit\" \"bun run test:integration\"",
     "test:unit": "bun test --isolate --preload ./test/setup.ts test/unit",
     "test:integration": "bun test test/integration",
     "db:migrate:dev": "bunx --bun prisma migrate dev",
@@ -37,6 +37,7 @@
   "devDependencies": {
     "@types/bun": "latest",
     "@types/pg": "^8.20.0",
+    "concurrently": "^9.2.1",
     "prisma": "^7.8.0"
   }
 }

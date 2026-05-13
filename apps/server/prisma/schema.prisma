@@ -102,6 +102,7 @@ model Message {
   sender         User?        @relation(fields: [senderId], references: [id], onDelete: SetNull)
   attachment     Asset?       @relation("MessageAttachment", fields: [attachmentKey], references: [key], onDelete: SetNull)
 
+  @@index([conversationId, createdAt, senderId, deletedAt], map: "message_conv_created_covering_idx")
   @@map("message")
 }
 

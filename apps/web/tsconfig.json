@@ -11,5 +11,6 @@
       "@workspace/ui/*": ["../../packages/ui/src/*"]
     },
     "ignoreDeprecations": "6.0",
+    "strict": true,
   }
 }

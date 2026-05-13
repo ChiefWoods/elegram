@@ -1,17 +1,23 @@
 import { HeadContent, Outlet, createRootRoute } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
-import * as React from "react";
+import { useEffect } from "react";
 
 export const Route = createRootRoute({
   component: RootComponent,
 });
 
 function RootComponent() {
+  useEffect(() => {
+    if (import.meta.env.DEV) {
+      void import("react-grab");
+    }
+  }, []);
+
   return (
-    <React.Fragment>
+    <>
       <HeadContent />
       <Outlet />
       <TanStackRouterDevtools />
-    </React.Fragment>
+    </>
   );
 }

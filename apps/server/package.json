@@ -3,8 +3,9 @@
   "type": "module",
   "scripts": {
     "dev": "bun run --hot src/index.ts",
-    "test": "bun test --preload",
+    "test": "bun run test:unit && bun run test:integration",
     "test:unit": "bun test --isolate --preload ./test/setup.ts test/unit",
+    "test:integration": "bun test test/integration",
     "db:migrate:dev": "bunx --bun prisma migrate dev",
     "db:migrate:deploy": "bunx --bun prisma migrate deploy",
     "db:generate": "bunx --bun prisma generate",

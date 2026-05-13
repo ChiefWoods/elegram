@@ -2,9 +2,9 @@ import { Hono } from "hono";
 import { testClient } from "hono/testing";
 import { describe, expect, test, vi } from "vitest";
 
-import type { AuthzVariables } from "../src/lib/authz";
+import type { AuthzVariables } from "../../src/lib/authz";
 
-import membersRouter from "../src/routes/members";
+import membersRouter from "../../src/routes/members";
 
 const { prisma, publishToUser } = vi.hoisted(() => ({
   prisma: {
@@ -21,9 +21,9 @@ const { prisma, publishToUser } = vi.hoisted(() => ({
   publishToUser: vi.fn(),
 }));
 
-vi.mock("../src/lib/prisma", () => ({ prisma }));
-vi.mock("../src/lib/pubsub", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("../src/lib/pubsub")>();
+vi.mock("../../src/lib/prisma", () => ({ prisma }));
+vi.mock("../../src/lib/pubsub", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("../../src/lib/pubsub")>();
   return { ...actual, publishToUser };
 });
 

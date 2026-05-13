@@ -7,7 +7,7 @@ import {
   onlineUserIds,
   track,
   untrack,
-} from "../src/lib/presence";
+} from "../../src/lib/presence";
 
 beforeEach(() => {
   __resetForTests();

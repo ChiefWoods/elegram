@@ -1,7 +1,7 @@
 import { describe, expect, test, vi } from "vitest";
 
-import eventsRouter from "../src/routes/events";
-import { authedClient } from "./helpers";
+import eventsRouter from "../../src/routes/events";
+import { authedClient } from "../helpers";
 
 const {
   writes,
@@ -53,10 +53,10 @@ const {
 });
 
 vi.mock("hono/streaming", () => ({ streamSSE }));
-vi.mock("../src/lib/prisma", () => ({ prisma }));
-vi.mock("../src/lib/presence", () => ({ track, untrack, onlineUserIds, onPresence }));
-vi.mock("../src/lib/pubsub", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("../src/lib/pubsub")>();
+vi.mock("../../src/lib/prisma", () => ({ prisma }));
+vi.mock("../../src/lib/presence", () => ({ track, untrack, onlineUserIds, onPresence }));
+vi.mock("../../src/lib/pubsub", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("../../src/lib/pubsub")>();
   return { ...actual, subscribeUser, publishToUser };
 });
 

@@ -1,7 +1,7 @@
 import { describe, expect, test, vi } from "vitest";
 
-import convRouter from "../src/routes/conversations";
-import { authedClient } from "./helpers";
+import convRouter from "../../src/routes/conversations";
+import { authedClient } from "../helpers";
 
 const { prisma, publishToUser } = vi.hoisted(() => ({
   prisma: {
@@ -20,9 +20,9 @@ const { prisma, publishToUser } = vi.hoisted(() => ({
   publishToUser: vi.fn(),
 }));
 
-vi.mock("../src/lib/prisma", () => ({ prisma }));
-vi.mock("../src/lib/pubsub", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("../src/lib/pubsub")>();
+vi.mock("../../src/lib/prisma", () => ({ prisma }));
+vi.mock("../../src/lib/pubsub", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("../../src/lib/pubsub")>();
   return { ...actual, publishToUser };
 });
 

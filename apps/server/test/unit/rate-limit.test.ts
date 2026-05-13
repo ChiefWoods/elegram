@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import { describe, expect, test } from "vitest";
 
-import { createRateLimiter, rateLimit, type RedisLike } from "../src/lib/rate-limit";
+import { createRateLimiter, rateLimit, type RedisLike } from "../../src/lib/rate-limit";
 
 function fakeRedis(): RedisLike {
   const store = new Map<string, { tokens: number; ts: number }>();

@@ -1,22 +1,22 @@
 import { describe, expect, test, vi } from "vitest";
 
-import uploadsRouter from "../src/routes/uploads";
-import { authedClient } from "./helpers";
+import uploadsRouter from "../../src/routes/uploads";
+import { authedClient } from "../helpers";
 
 const { prisma } = vi.hoisted(() => ({
   prisma: { asset: { findUnique: vi.fn(), create: vi.fn() } },
 }));
 
-vi.mock("../src/lib/prisma", () => ({ prisma }));
+vi.mock("../../src/lib/prisma", () => ({ prisma }));
 
-vi.mock("../src/lib/s3", () => ({
+vi.mock("../../src/lib/s3", () => ({
   presignPut: ({ key }: { key: string }) => `https://put.example/${key}`,
   presignGet: ({ key }: { key: string }) => `https://get.example/${key}`,
   publicUrl: () => null,
 }));
 
 // Bypass token-bucket gating by always granting tokens.
-vi.mock("../src/lib/redis", () => ({
+vi.mock("../../src/lib/redis", () => ({
   redis: { send: vi.fn(async () => [1, 0]) },
 }));
 

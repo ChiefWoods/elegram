@@ -1,7 +1,7 @@
 import { describe, expect, test, vi } from "vitest";
 
-import meRouter from "../src/routes/me";
-import { authedClient } from "./helpers";
+import meRouter from "../../src/routes/me";
+import { authedClient } from "../helpers";
 
 const { prisma } = vi.hoisted(() => ({
   prisma: {
@@ -12,7 +12,7 @@ const { prisma } = vi.hoisted(() => ({
   },
 }));
 
-vi.mock("../src/lib/prisma", () => ({ prisma }));
+vi.mock("../../src/lib/prisma", () => ({ prisma }));
 
 describe("GET /api/me", () => {
   test("401 when unauthenticated", async () => {

@@ -33,9 +33,9 @@ const { fakeBun, fakeRedis } = vi.hoisted(() => {
 // `pubsub.ts` also imports the shared `redis` singleton for `PUBLISH` writes,
 // so this fake intercepts `redis.send(...)` used by `publishToUser`.
 vi.mock("bun", () => ({ RedisClient: fakeBun.RedisClient }));
-vi.mock("../src/lib/redis", () => fakeRedis);
+vi.mock("../../src/lib/redis", () => fakeRedis);
 
-const { publishToUser, subscribeUser, RealtimeEventType } = await import("../src/lib/pubsub");
+const { publishToUser, subscribeUser, RealtimeEventType } = await import("../../src/lib/pubsub");
 
 function deliver(payload: unknown): void {
   for (const sub of fakeBun.subscribers) sub(JSON.stringify(payload));

@@ -1,13 +1,13 @@
 import { describe, expect, test, vi } from "vitest";
 
-import usersRouter from "../src/routes/users";
-import { authedClient } from "./helpers";
+import usersRouter from "../../src/routes/users";
+import { authedClient } from "../helpers";
 
 const { prisma } = vi.hoisted(() => ({
   prisma: { user: { findMany: vi.fn() } },
 }));
 
-vi.mock("../src/lib/prisma", () => ({ prisma }));
+vi.mock("../../src/lib/prisma", () => ({ prisma }));
 
 describe("GET /api/users", () => {
   test("401 when unauthenticated", async () => {

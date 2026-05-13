@@ -1,8 +1,8 @@
 import { describe, expect, test, vi } from "vitest";
 
-import { MESSAGE_MUTATION_WINDOW_MS } from "../src/lib/constants";
-import messagesRouter from "../src/routes/messages";
-import { authedMessagesClient } from "./helpers";
+import { MESSAGE_MUTATION_WINDOW_MS } from "../../src/lib/constants";
+import messagesRouter from "../../src/routes/messages";
+import { authedMessagesClient } from "../helpers";
 
 const { prisma, publishToUser } = vi.hoisted(() => ({
   prisma: {
@@ -14,9 +14,9 @@ const { prisma, publishToUser } = vi.hoisted(() => ({
   publishToUser: vi.fn(),
 }));
 
-vi.mock("../src/lib/prisma", () => ({ prisma }));
-vi.mock("../src/lib/pubsub", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("../src/lib/pubsub")>();
+vi.mock("../../src/lib/prisma", () => ({ prisma }));
+vi.mock("../../src/lib/pubsub", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("../../src/lib/pubsub")>();
   return { ...actual, publishToUser };
 });
 

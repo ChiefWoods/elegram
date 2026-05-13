@@ -12,6 +12,7 @@ import healthRouter from "./routes/health";
 import meRouter from "./routes/me";
 import messagesRouter from "./routes/messages";
 import presenceRouter from "./routes/presence";
+import searchRouter from "./routes/search";
 import uploadsRouter from "./routes/uploads";
 import usersRouter from "./routes/users";
 
@@ -48,6 +49,7 @@ const routes = app
   .route("/health", healthRouter)
   .route("/api/me", meRouter)
   .route("/api/users", usersRouter)
+  .route("/api/search", searchRouter)
   .route("/api/uploads", uploadsRouter)
   .route("/api/events", eventsRouter)
   .route("/api/presence", presenceRouter)

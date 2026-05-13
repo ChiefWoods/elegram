@@ -1,7 +1,12 @@
 import { defineConfig } from "oxfmt";
 
 export default defineConfig({
-  ignorePatterns: ["node_modules/**", ".turbo/**", "packages/ui/**"],
+  ignorePatterns: [
+    "node_modules/**",
+    ".turbo/**",
+    "packages/ui/**",
+    "apps/web/src/routeTree.gen.ts",
+  ],
   sortImports: {
     groups: [
       "type-import",

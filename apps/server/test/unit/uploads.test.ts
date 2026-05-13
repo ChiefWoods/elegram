@@ -1,11 +1,8 @@
-import { describe, expect, test, vi } from "vitest";
+import { describe, expect, test, vi } from "bun:test";
 
-import uploadsRouter from "../../src/routes/uploads";
 import { authedClient } from "../helpers";
 
-const { prisma } = vi.hoisted(() => ({
-  prisma: { asset: { findUnique: vi.fn(), create: vi.fn() } },
-}));
+const prisma = { asset: { findUnique: vi.fn(), create: vi.fn() } };
 
 vi.mock("../../src/lib/prisma", () => ({ prisma }));
 
@@ -19,6 +16,8 @@ vi.mock("../../src/lib/s3", () => ({
 vi.mock("../../src/lib/redis", () => ({
   redis: { send: vi.fn(async () => [1, 0]) },
 }));
+
+const { default: uploadsRouter } = await import("../../src/routes/uploads");
 
 describe("POST /api/uploads/presign", () => {
   test("401 when unauthenticated", async () => {

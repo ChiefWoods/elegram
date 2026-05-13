@@ -1,5 +1,5 @@
+import { describe, expect, test } from "bun:test";
 import { Hono } from "hono";
-import { describe, expect, test } from "vitest";
 
 import { createRateLimiter, rateLimit, type RedisLike } from "../../src/lib/rate-limit";
 

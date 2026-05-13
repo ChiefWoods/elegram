@@ -1,6 +1,6 @@
+import { describe, expect, test } from "bun:test";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
-import { describe, expect, test } from "vitest";
 
 const WEB_ORIGIN = "http://localhost:5173";
 

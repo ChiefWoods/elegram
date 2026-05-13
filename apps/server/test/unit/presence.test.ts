@@ -1,17 +1,20 @@
-import { describe, expect, test, vi } from "vitest";
+import { beforeEach, describe, expect, test, vi } from "bun:test";
 
-import presenceRouter from "../../src/routes/presence";
 import { authedClient } from "../helpers";
 
-const { prisma, onlineUserIds } = vi.hoisted(() => ({
-  prisma: {
-    conversationMember: { findMany: vi.fn() },
-  },
-  onlineUserIds: vi.fn(() => [] as string[]),
-}));
+const prisma = {
+  conversationMember: { findMany: vi.fn() },
+};
+const onlineUserIds = vi.fn(() => [] as string[]);
 
 vi.mock("../../src/lib/prisma", () => ({ prisma }));
 vi.mock("../../src/lib/presence", () => ({ onlineUserIds }));
+
+const { default: presenceRouter } = await import("../../src/routes/presence");
+
+beforeEach(() => {
+  vi.clearAllMocks();
+});
 
 describe("GET /api/presence", () => {
   test("401 when unauthenticated", async () => {

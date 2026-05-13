@@ -1,24 +1,30 @@
-import { describe, expect, test, vi } from "vitest";
+import { beforeEach, describe, expect, test, vi } from "bun:test";
 
 import { MESSAGE_MUTATION_WINDOW_MS } from "../../src/lib/constants";
-import messagesRouter from "../../src/routes/messages";
 import { authedMessagesClient } from "../helpers";
 
-const { prisma, publishToUser } = vi.hoisted(() => ({
-  prisma: {
-    conversationMember: { findUnique: vi.fn(), findMany: vi.fn() },
-    message: { findUnique: vi.fn(), findMany: vi.fn(), create: vi.fn(), update: vi.fn() },
-    conversation: { update: vi.fn() },
-    asset: { findUnique: vi.fn() },
-  },
-  publishToUser: vi.fn(),
-}));
+const prisma = {
+  conversationMember: { findUnique: vi.fn(), findMany: vi.fn() },
+  message: { findUnique: vi.fn(), findMany: vi.fn(), create: vi.fn(), update: vi.fn() },
+  conversation: { update: vi.fn() },
+  asset: { findUnique: vi.fn() },
+};
+const publishToUser = vi.fn();
 
 vi.mock("../../src/lib/prisma", () => ({ prisma }));
-vi.mock("../../src/lib/pubsub", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("../../src/lib/pubsub")>();
-  return { ...actual, publishToUser };
-});
+vi.mock("../../src/lib/pubsub", () => ({
+  publishToUser,
+  RealtimeEventType: {
+    MessageCreated: "message.created",
+    MessageUpdated: "message.updated",
+    ConversationUpdated: "conversation.updated",
+    ConversationDeleted: "conversation.deleted",
+    Presence: "presence",
+    PresenceSnapshot: "presence.snapshot",
+  },
+}));
+
+const { default: messagesRouter } = await import("../../src/routes/messages");
 
 const cParam = { param: { id: "c1" } };
 
@@ -33,6 +39,10 @@ function memberOf(conversationId = "c1", userId = "u1") {
     role: "MEMBER",
   });
 }
+
+beforeEach(() => {
+  vi.clearAllMocks();
+});
 
 describe("messages middleware gate", () => {
   test("401 when unauthenticated", async () => {

@@ -23,6 +23,10 @@ export type RealtimeEvent =
   | { type: typeof RealtimeEventType.PresenceSnapshot; userIds: string[] };
 
 type Envelope = { userId: string; event: RealtimeEvent };
+type TestSubscribeHook = (
+  channel: string,
+  handler: (message: string) => void,
+) => Promise<void> | void;
 
 const CHANNEL = "elegram:realtime";
 
@@ -45,7 +49,13 @@ function handleIncoming(message: string): void {
 
 function ensureSubscribed(): Promise<void> {
   if (subscribePromise) return subscribePromise;
-  const pending = subscriber.subscribe(CHANNEL, handleIncoming).then(() => undefined);
+  const testSubscribe = (globalThis as { __TEST_PUBSUB_SUBSCRIBE__?: TestSubscribeHook })
+    .__TEST_PUBSUB_SUBSCRIBE__;
+  const pending = Promise.resolve(
+    testSubscribe
+      ? testSubscribe(CHANNEL, handleIncoming)
+      : subscriber.subscribe(CHANNEL, handleIncoming),
+  ).then(() => undefined);
   subscribePromise = pending;
   pending.catch(() => {
     if (subscribePromise === pending) subscribePromise = null;

@@ -1,10 +1,10 @@
+import { vi } from "bun:test";
 import { Hono } from "hono";
 import { testClient } from "hono/testing";
-import { type Mock, vi } from "vitest";
 
 import type { AuthzVariables } from "../src/lib/authz";
 
-type PrismaMethod = Mock<(args?: unknown) => Promise<unknown>>;
+type PrismaMethod = ReturnType<typeof vi.fn<(args?: unknown) => Promise<unknown>>>;
 
 export type FakePrisma = {
   user: Record<"findUnique" | "findMany" | "update", PrismaMethod>;

@@ -1,5 +1,5 @@
+import { describe, expect, test } from "bun:test";
 import { testClient } from "hono/testing";
-import { describe, expect, test } from "vitest";
 
 import healthRouter from "../../src/routes/health";
 

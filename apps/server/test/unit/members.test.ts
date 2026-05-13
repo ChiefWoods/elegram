@@ -1,31 +1,36 @@
+import { describe, expect, test, vi } from "bun:test";
 import { Hono } from "hono";
 import { testClient } from "hono/testing";
-import { describe, expect, test, vi } from "vitest";
 
 import type { AuthzVariables } from "../../src/lib/authz";
 
-import membersRouter from "../../src/routes/members";
-
-const { prisma, publishToUser } = vi.hoisted(() => ({
-  prisma: {
-    user: { findMany: vi.fn() },
-    conversation: { findUnique: vi.fn() },
-    conversationMember: {
-      findUnique: vi.fn(),
-      findMany: vi.fn(),
-      createMany: vi.fn(),
-      delete: vi.fn(),
-      update: vi.fn(),
-    },
+const prisma = {
+  user: { findMany: vi.fn() },
+  conversation: { findUnique: vi.fn() },
+  conversationMember: {
+    findUnique: vi.fn(),
+    findMany: vi.fn(),
+    createMany: vi.fn(),
+    delete: vi.fn(),
+    update: vi.fn(),
   },
-  publishToUser: vi.fn(),
-}));
+};
+const publishToUser = vi.fn();
 
 vi.mock("../../src/lib/prisma", () => ({ prisma }));
-vi.mock("../../src/lib/pubsub", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("../../src/lib/pubsub")>();
-  return { ...actual, publishToUser };
-});
+vi.mock("../../src/lib/pubsub", () => ({
+  publishToUser,
+  RealtimeEventType: {
+    MessageCreated: "message.created",
+    MessageUpdated: "message.updated",
+    ConversationUpdated: "conversation.updated",
+    ConversationDeleted: "conversation.deleted",
+    Presence: "presence",
+    PresenceSnapshot: "presence.snapshot",
+  },
+}));
+
+const { default: membersRouter } = await import("../../src/routes/members");
 
 function authedMembersClient(userId: string | null) {
   const app = new Hono<{ Variables: AuthzVariables }>()
@@ -144,7 +149,7 @@ describe("DELETE /api/conversations/:id/members/:userId", () => {
       param: { id: "c1", userId: "u2" },
     });
     expect(res.status).toBe(200);
-    expect(prisma.conversationMember.delete).toHaveBeenCalledOnce();
+    expect(prisma.conversationMember.delete).toHaveBeenCalledTimes(1);
     expect(publishToUser).toHaveBeenCalledWith(
       "u1",
       expect.objectContaining({ type: "conversation.updated", conversationId: "c1" }),

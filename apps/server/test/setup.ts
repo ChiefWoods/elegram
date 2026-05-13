@@ -1,4 +1,9 @@
-import { vi } from "vitest";
+import { vi } from "bun:test";
+
+type TestRedisHooks = {
+  onSubscribe?: (channel: string, handler: (message: string) => void) => void;
+  onSend?: (command: string, args: string[]) => void;
+};
 
 // Vitest runs on Node, but the server imports `RedisClient` from "bun".
 // Provide a generic stub so any module that does `new RedisClient(url)` or
@@ -9,8 +14,13 @@ import { vi } from "vitest";
 vi.mock("bun", () => {
   class FakeRedisClient {
     constructor(public url: string) {}
-    async subscribe(_channel: string, _handler: (message: string) => void): Promise<void> {}
+    async subscribe(channel: string, handler: (message: string) => void): Promise<void> {
+      const hooks = (globalThis as { __TEST_BUN_REDIS__?: TestRedisHooks }).__TEST_BUN_REDIS__;
+      hooks?.onSubscribe?.(channel, handler);
+    }
     async send(_command: string, _args: string[]): Promise<unknown> {
+      const hooks = (globalThis as { __TEST_BUN_REDIS__?: TestRedisHooks }).__TEST_BUN_REDIS__;
+      hooks?.onSend?.(_command, _args);
       return 0;
     }
   }

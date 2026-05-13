@@ -1,29 +1,39 @@
-import { describe, expect, test, vi } from "vitest";
+import { beforeEach, describe, expect, test, vi } from "bun:test";
 
-import convRouter from "../../src/routes/conversations";
 import { authedClient } from "../helpers";
 
-const { prisma, publishToUser } = vi.hoisted(() => ({
-  prisma: {
-    user: { findUnique: vi.fn(), findMany: vi.fn() },
-    conversation: { findUnique: vi.fn(), create: vi.fn(), update: vi.fn(), delete: vi.fn() },
-    conversationMember: {
-      findUnique: vi.fn(),
-      findMany: vi.fn(),
-      createMany: vi.fn(),
-      update: vi.fn(),
-      delete: vi.fn(),
-    },
-    message: { count: vi.fn() },
-    $transaction: vi.fn(),
+const prisma = {
+  user: { findUnique: vi.fn(), findMany: vi.fn() },
+  conversation: { findUnique: vi.fn(), create: vi.fn(), update: vi.fn(), delete: vi.fn() },
+  conversationMember: {
+    findUnique: vi.fn(),
+    findMany: vi.fn(),
+    createMany: vi.fn(),
+    update: vi.fn(),
+    delete: vi.fn(),
   },
-  publishToUser: vi.fn(),
-}));
+  message: { count: vi.fn() },
+  $transaction: vi.fn(),
+};
+const publishToUser = vi.fn();
 
 vi.mock("../../src/lib/prisma", () => ({ prisma }));
-vi.mock("../../src/lib/pubsub", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("../../src/lib/pubsub")>();
-  return { ...actual, publishToUser };
+vi.mock("../../src/lib/pubsub", () => ({
+  publishToUser,
+  RealtimeEventType: {
+    MessageCreated: "message.created",
+    MessageUpdated: "message.updated",
+    ConversationUpdated: "conversation.updated",
+    ConversationDeleted: "conversation.deleted",
+    Presence: "presence",
+    PresenceSnapshot: "presence.snapshot",
+  },
+}));
+
+const { default: convRouter } = await import("../../src/routes/conversations");
+
+beforeEach(() => {
+  vi.clearAllMocks();
 });
 
 describe("GET /api/conversations", () => {
@@ -291,7 +301,7 @@ describe("DELETE /api/conversations/:id/leave", () => {
     prisma.conversationMember.delete.mockResolvedValue({});
     const res = await authedClient(convRouter, "u1")[":id"].leave.$delete({ param: { id: "c1" } });
     expect(res.status).toBe(200);
-    expect(prisma.conversationMember.delete).toHaveBeenCalledOnce();
+    expect(prisma.conversationMember.delete).toHaveBeenCalledTimes(1);
   });
 });
 
@@ -347,7 +357,7 @@ describe("PATCH /api/conversations/:id", () => {
       json: { title: "Renamed" },
     });
     expect(res.status).toBe(200);
-    expect(prisma.conversation.update).toHaveBeenCalledOnce();
+    expect(prisma.conversation.update).toHaveBeenCalledTimes(1);
     expect(publishToUser).toHaveBeenCalledWith(
       "u2",
       expect.objectContaining({ type: "conversation.updated", conversationId: "c1" }),
@@ -431,7 +441,7 @@ describe("POST /api/conversations/:id/transfer", () => {
       json: { newOwnerId: "u2" },
     });
     expect(res.status).toBe(200);
-    expect(prisma.$transaction).toHaveBeenCalledOnce();
+    expect(prisma.$transaction).toHaveBeenCalledTimes(1);
     expect(publishToUser).toHaveBeenCalledWith(
       "u2",
       expect.objectContaining({ type: "conversation.updated", conversationId: "c1" }),

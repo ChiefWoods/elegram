@@ -1,64 +1,57 @@
-import { describe, expect, test, vi } from "vitest";
+import { describe, expect, test, vi } from "bun:test";
 
-import eventsRouter from "../../src/routes/events";
 import { authedClient } from "../helpers";
 
-const {
-  writes,
-  streamSSE,
-  prisma,
-  subscribeUser,
-  publishToUser,
-  track,
-  untrack,
-  onlineUserIds,
-  onPresence,
-} = vi.hoisted(() => {
-  const writes: Array<{ event: string; data: string }> = [];
+const writes: Array<{ event: string; data: string }> = [];
 
-  const streamSSE = vi.fn(async (_c: unknown, cb: (stream: any) => Promise<void>) => {
-    const abortHandlers: Array<() => void> = [];
-    const stream = {
-      closed: false,
-      writeSSE: vi.fn(async (evt: { event: string; data: string }) => {
-        writes.push(evt);
-      }),
-      sleep: vi.fn(async () => {
-        stream.closed = true;
-        for (const fn of abortHandlers) fn();
-      }),
-      onAbort: (fn: () => void) => {
-        abortHandlers.push(fn);
-      },
-    };
-
-    await cb(stream);
-    return new Response(null, { status: 200 });
-  });
-
-  return {
-    writes,
-    streamSSE,
-    prisma: {
-      conversationMember: { findMany: vi.fn() },
-      user: { update: vi.fn() },
+const streamSSE = vi.fn(async (_c: unknown, cb: (stream: any) => Promise<void>) => {
+  const abortHandlers: Array<() => void> = [];
+  const stream = {
+    closed: false,
+    writeSSE: vi.fn(async (evt: { event: string; data: string }) => {
+      writes.push(evt);
+    }),
+    sleep: vi.fn(async () => {
+      stream.closed = true;
+      for (const fn of abortHandlers) fn();
+    }),
+    onAbort: (fn: () => void) => {
+      abortHandlers.push(fn);
     },
-    subscribeUser: vi.fn(() => () => undefined),
-    publishToUser: vi.fn(),
-    track: vi.fn(() => true),
-    untrack: vi.fn(() => true),
-    onlineUserIds: vi.fn(() => ["u2"]),
-    onPresence: vi.fn(() => () => undefined),
   };
+
+  await cb(stream);
+  return new Response(null, { status: 200 });
 });
+
+const prisma = {
+  conversationMember: { findMany: vi.fn() },
+  user: { update: vi.fn() },
+};
+const subscribeUser = vi.fn(() => () => undefined);
+const publishToUser = vi.fn();
+const track = vi.fn(() => true);
+const untrack = vi.fn(() => true);
+const onlineUserIds = vi.fn(() => ["u2"]);
+const onPresence = vi.fn(() => () => undefined);
 
 vi.mock("hono/streaming", () => ({ streamSSE }));
 vi.mock("../../src/lib/prisma", () => ({ prisma }));
 vi.mock("../../src/lib/presence", () => ({ track, untrack, onlineUserIds, onPresence }));
-vi.mock("../../src/lib/pubsub", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("../../src/lib/pubsub")>();
-  return { ...actual, subscribeUser, publishToUser };
-});
+vi.mock("../../src/lib/pubsub", () => ({
+  subscribeUser,
+  publishToUser,
+  RealtimeEventType: {
+    MessageCreated: "message.created",
+    MessageUpdated: "message.updated",
+    ConversationUpdated: "conversation.updated",
+    ConversationDeleted: "conversation.deleted",
+    Presence: "presence",
+    PresenceSnapshot: "presence.snapshot",
+  },
+}));
+
+const { default: eventsRouter } = await import("../../src/routes/events");
 
 describe("GET /api/events", () => {
   test("401 when unauthenticated", async () => {

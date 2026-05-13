@@ -1,11 +1,9 @@
-import { describe, expect, test, vi } from "vitest";
+import { describe, expect, test, vi } from "bun:test";
 
 import usersRouter from "../../src/routes/users";
 import { authedClient } from "../helpers";
 
-const { prisma } = vi.hoisted(() => ({
-  prisma: { user: { findMany: vi.fn() } },
-}));
+const prisma = { user: { findMany: vi.fn() } };
 
 vi.mock("../../src/lib/prisma", () => ({ prisma }));
 

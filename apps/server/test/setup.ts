@@ -14,5 +14,27 @@ vi.mock("bun", () => {
       return 0;
     }
   }
-  return { RedisClient: FakeRedisClient };
+
+  class FakeS3File {
+    constructor(private key: string) {}
+    presign(_opts: { method: "PUT" | "GET"; expiresIn?: number; type?: string }) {
+      return `https://example.test/${this.key}`;
+    }
+    async delete(): Promise<void> {}
+    async exists(): Promise<boolean> {
+      return true;
+    }
+    async stat(): Promise<Record<string, never>> {
+      return {};
+    }
+  }
+
+  class FakeS3Client {
+    constructor(_opts: Record<string, unknown>) {}
+    file(key: string) {
+      return new FakeS3File(key);
+    }
+  }
+
+  return { RedisClient: FakeRedisClient, S3Client: FakeS3Client };
 });

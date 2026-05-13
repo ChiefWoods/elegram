@@ -2,8 +2,10 @@ import { passkeyClient } from "@better-auth/passkey/client";
 import { usernameClient } from "better-auth/client/plugins";
 import { createAuthClient } from "better-auth/react";
 
+import { env } from "./env";
+
 const authClient = createAuthClient({
-  baseURL: import.meta.env.VITE_SERVER_URL ?? "http://localhost:3000",
+  baseURL: env.VITE_SERVER_URL,
   basePath: "/auth",
   plugins: [passkeyClient(), usernameClient()],
 });

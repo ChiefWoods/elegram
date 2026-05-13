@@ -1,6 +1,9 @@
 {
   "name": "server",
   "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
   "scripts": {
     "dev": "bun run --hot src/index.ts",
     "test": "bun run test:unit && bun run test:integration",

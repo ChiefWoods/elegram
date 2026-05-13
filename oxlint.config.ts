@@ -7,6 +7,9 @@ export default defineConfig({
     {
       files: ["**/*.{ts,tsx}"],
       plugins: ["typescript", "node", "react", "vitest"],
+      rules: {
+        "vitest/require-mock-type-parameters": "off",
+      },
       env: {
         es2026: true,
         node: true,

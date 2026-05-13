@@ -10,6 +10,7 @@ import conversationsRouter from "./routes/conversations";
 import eventsRouter from "./routes/events";
 import healthRouter from "./routes/health";
 import meRouter from "./routes/me";
+import membersRouter from "./routes/members";
 import messagesRouter from "./routes/messages";
 import presenceRouter from "./routes/presence";
 import searchRouter from "./routes/search";
@@ -54,6 +55,7 @@ const routes = app
   .route("/api/events", eventsRouter)
   .route("/api/presence", presenceRouter)
   .route("/api/conversations/:id/messages", messagesRouter)
+  .route("/api/conversations/:id/members", membersRouter)
   .route("/api/conversations", conversationsRouter)
   .notFound((c) => c.json({ error: "Not Found" }, 404));
 

@@ -10,7 +10,8 @@
     "format": "prettier --write \"**/*.{ts,tsx}\"",
     "typecheck": "tsc --noEmit",
     "doctor": "bunx react-doctor",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "generate-routes": "tsr generate"
   },
   "dependencies": {
     "@better-auth/passkey": "^1.6.10",
@@ -31,6 +32,7 @@
     "@eslint/js": "^9.39.2",
     "@tailwindcss/vite": "^4.1.18",
     "@tanstack/react-router-ssr-query": "^1.166.12",
+    "@tanstack/router-cli": "^1.166.43",
     "@tanstack/router-plugin": "^1.167.35",
     "@types/node": "^25.1.0",
     "@types/react": "^19.2.10",

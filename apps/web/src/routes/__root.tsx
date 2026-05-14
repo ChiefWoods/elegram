@@ -1,6 +1,7 @@
 import { HeadContent, Outlet, createRootRoute } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import { Toaster } from "@workspace/ui/components/sonner";
+import { TooltipProvider } from "@workspace/ui/components/tooltip";
 import { useEffect } from "react";
 
 export const Route = createRootRoute({
@@ -17,7 +18,9 @@ function RootComponent() {
   return (
     <>
       <HeadContent />
-      <Outlet />
+      <TooltipProvider>
+        <Outlet />
+      </TooltipProvider>
       <Toaster richColors position="bottom-right" closeButton />
       <TanStackRouterDevtools />
     </>

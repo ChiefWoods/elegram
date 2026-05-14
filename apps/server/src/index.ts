@@ -46,7 +46,7 @@ app.use("*", async (c, next) => {
 });
 
 const routes = app
-  .route("/auth", authRouter)
+  .route("/api/auth", authRouter)
   .route("/health", healthRouter)
   .route("/api/me", meRouter)
   .route("/api/users", usersRouter)

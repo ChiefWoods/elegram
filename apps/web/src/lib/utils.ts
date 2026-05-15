@@ -5,6 +5,29 @@ export function toIsoDate(d: Date): string {
   return `${y}-${m}-${day}`;
 }
 
+const MONTH_NAMES = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+];
+
+export function formatDayLabel(iso: string): string {
+  const [y, m, d] = iso.split("-").map(Number);
+  if (!y || !m || !d) return iso;
+  const month = MONTH_NAMES[m - 1];
+  const currentYear = new Date().getFullYear();
+  return y === currentYear ? `${month} ${d}` : `${month} ${d}, ${y}`;
+}
+
 export function withTrailingPeriod(message: string) {
   return /[.!?]$/.test(message) ? message : `${message}.`;
 }

@@ -28,6 +28,16 @@ export function formatDayLabel(iso: string): string {
   return y === currentYear ? `${month} ${d}` : `${month} ${d}, ${y}`;
 }
 
+export function formatCreatedAt(value: Date | string): string {
+  const date = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+  return date.toLocaleDateString(undefined, {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+}
+
 export function withTrailingPeriod(message: string) {
   return /[.!?]$/.test(message) ? message : `${message}.`;
 }

@@ -1,0 +1,42 @@
+import * as React from "react"
+
+import { cn } from "@workspace/ui/lib/utils"
+
+function InlineSheet({
+  open,
+  side = "right",
+  width = "20rem",
+  className,
+  children,
+  style,
+  ...props
+}: Omit<React.ComponentProps<"div">, "children"> & {
+  open: boolean
+  side?: "left" | "right"
+  width?: string
+  children?: React.ReactNode
+}) {
+  return (
+    <div
+      data-slot="inline-sheet"
+      data-state={open ? "open" : "closed"}
+      data-side={side}
+      style={{ width: open ? width : "0px", ...style }}
+      className="h-full shrink-0 overflow-hidden transition-[width] duration-200 ease-in-out"
+    >
+      <div
+        style={{ width }}
+        className={cn(
+          "bg-popover text-popover-foreground flex h-full flex-col text-sm",
+          side === "right" ? "border-l" : "border-r",
+          className
+        )}
+        {...props}
+      >
+        {children}
+      </div>
+    </div>
+  )
+}
+
+export { InlineSheet }

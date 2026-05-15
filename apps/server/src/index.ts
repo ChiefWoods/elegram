@@ -1,5 +1,6 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
+import { logger } from "hono/logger";
 
 import type { AuthzVariables } from "./lib/authz";
 
@@ -44,6 +45,8 @@ app.use("*", async (c, next) => {
   c.set("session", session.session);
   return next();
 });
+
+app.use(logger());
 
 const routes = app
   .route("/api/auth", authRouter)

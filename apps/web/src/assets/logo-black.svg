@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 156 48" width="156" height="48">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="oklch(0.6 0.14 240)"></stop>
+      <stop offset="1" stop-color="oklch(0.44 0.11 240)"></stop>
+    </linearGradient>
+  </defs>
+  <circle cx="24" cy="24" r="22" fill="url(#g)"></circle>
+  <path d="M12 24 L36 16 L30 34 L22 27 Z" fill="#fff"></path>
+  <path d="M22 27 L26 32 L30 34" stroke="#fff" stroke-width="1.8" fill="none" stroke-linejoin="round" stroke-linecap="round"></path>
+  <text x="56" y="32" font-family="Figtree, system-ui, sans-serif" font-weight="700" font-size="26" fill="oklch(0.148 0.004 228.8)" letter-spacing="-0.5">Elegram</text>
+</svg>

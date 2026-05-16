@@ -11,16 +11,7 @@ import { useMemo } from "react";
 import { InitialsAvatar } from "@/components/common/InitialsAvatar";
 import { usePinnedConversations } from "@/hooks/use-pinned-conversations";
 
-export type ConversationSummary = {
-  id: string;
-  name: string;
-  preview: string;
-  time: string;
-  unread?: number;
-  online?: boolean;
-  outgoing?: boolean;
-  read?: boolean;
-};
+import type { ConversationSummary } from "./types/conversation";
 
 export function ConversationList({
   items,

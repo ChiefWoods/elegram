@@ -38,6 +38,24 @@ export function formatCreatedAt(value: Date | string): string {
   });
 }
 
+const DAY_MS = 24 * 60 * 60 * 1000;
+const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+export function timeOfDay(date: Date): string {
+  return date.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit", hour12: false });
+}
+
+/** Telegram-style relative timestamp for the conversation list. */
+export function formatListTime(value: string | null): string {
+  if (!value) return "";
+  const date = new Date(value);
+  const now = new Date();
+  if (toIsoDate(date) === toIsoDate(now)) return timeOfDay(date);
+  if (toIsoDate(date) === toIsoDate(new Date(now.getTime() - DAY_MS))) return "Yesterday";
+  if (now.getTime() - date.getTime() < 7 * DAY_MS) return WEEKDAYS[date.getDay()] ?? "";
+  return date.toLocaleDateString(undefined, { day: "numeric", month: "short" });
+}
+
 export function withTrailingPeriod(message: string) {
   return /[.!?]$/.test(message) ? message : `${message}.`;
 }

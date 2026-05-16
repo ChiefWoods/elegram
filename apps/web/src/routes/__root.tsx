@@ -4,8 +4,11 @@ import { Toaster } from "@workspace/ui/components/sonner";
 import { TooltipProvider } from "@workspace/ui/components/tooltip";
 import { useEffect } from "react";
 
+import { NotFoundComponent } from "@/components/state/not-found";
+
 export const Route = createRootRoute({
   component: RootComponent,
+  notFoundComponent: NotFoundComponent,
 });
 
 function RootComponent() {

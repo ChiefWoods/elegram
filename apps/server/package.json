@@ -3,7 +3,8 @@
   "type": "module",
   "private": true,
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./limits": "./src/lib/limits.ts"
   },
   "scripts": {
     "dev": "bun run --hot src/index.ts",

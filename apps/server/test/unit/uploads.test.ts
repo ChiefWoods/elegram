@@ -30,14 +30,14 @@ describe("POST /api/uploads/presign", () => {
   test("400 with invalid mime", async () => {
     const res = await authedClient(uploadsRouter, "u1").presign.$post({
       // @ts-expect-error testing zod rejection
-      json: { mime: "application/pdf", size: 100 },
+      json: { mime: "application/xml", size: 100 },
     });
     expect(res.status).toBe(400);
   });
 
   test("400 with size over limit", async () => {
     const res = await authedClient(uploadsRouter, "u1").presign.$post({
-      json: { mime: "image/png", size: 5 * 1024 * 1024 + 1 },
+      json: { mime: "image/png", size: 10 * 1024 * 1024 + 1 },
     });
     expect(res.status).toBe(400);
   });

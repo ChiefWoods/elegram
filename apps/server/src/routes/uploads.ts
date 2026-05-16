@@ -8,19 +8,68 @@ import { prisma } from "../lib/prisma";
 import { presignRateLimiter, rateLimit } from "../lib/rate-limit";
 import { presignGet, presignPut, publicUrl } from "../lib/s3";
 
-const UploadBody = z.object({
-  mime: z.enum(LIMITS.upload.image.mimes),
-  size: z.number().int().min(1).max(LIMITS.upload.image.maxBytes),
-});
+const MESSAGE_IMAGE_MIMES = LIMITS.upload.message.image.mimes;
+const MESSAGE_DOCUMENT_MIMES = LIMITS.upload.message.document.mimes;
+const MESSAGE_MIMES = [...MESSAGE_IMAGE_MIMES, ...MESSAGE_DOCUMENT_MIMES] as const;
 
-const EXT_BY_MIME: Record<(typeof LIMITS.upload.image.mimes)[number], string> = {
+type MessageMime = (typeof MESSAGE_MIMES)[number];
+
+const MAX_BYTES_BY_MIME: Record<MessageMime, number> = {
+  "image/jpeg": LIMITS.upload.message.image.maxBytes,
+  "image/png": LIMITS.upload.message.image.maxBytes,
+  "image/webp": LIMITS.upload.message.image.maxBytes,
+  "image/gif": LIMITS.upload.message.image.maxBytes,
+  "application/pdf": LIMITS.upload.message.document.maxBytes,
+  "text/plain": LIMITS.upload.message.document.maxBytes,
+  "text/csv": LIMITS.upload.message.document.maxBytes,
+  "application/json": LIMITS.upload.message.document.maxBytes,
+  "application/zip": LIMITS.upload.message.document.maxBytes,
+  "application/msword": LIMITS.upload.message.document.maxBytes,
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+    LIMITS.upload.message.document.maxBytes,
+  "application/vnd.ms-excel": LIMITS.upload.message.document.maxBytes,
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+    LIMITS.upload.message.document.maxBytes,
+  "application/vnd.ms-powerpoint": LIMITS.upload.message.document.maxBytes,
+  "application/vnd.openxmlformats-officedocument.presentationml.presentation":
+    LIMITS.upload.message.document.maxBytes,
+};
+
+const UploadBody = z
+  .object({
+    mime: z.enum(MESSAGE_MIMES),
+    size: z.number().int().min(1),
+  })
+  .superRefine((value, ctx) => {
+    const maxBytes = MAX_BYTES_BY_MIME[value.mime];
+    if (value.size > maxBytes) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: `File is too large for ${value.mime}.`,
+        path: ["size"],
+      });
+    }
+  });
+
+const EXT_BY_MIME: Record<MessageMime, string> = {
   "image/jpeg": "jpg",
   "image/png": "png",
   "image/webp": "webp",
   "image/gif": "gif",
+  "application/pdf": "pdf",
+  "text/plain": "txt",
+  "text/csv": "csv",
+  "application/json": "json",
+  "application/zip": "zip",
+  "application/msword": "doc",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document": "docx",
+  "application/vnd.ms-excel": "xls",
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": "xlsx",
+  "application/vnd.ms-powerpoint": "ppt",
+  "application/vnd.openxmlformats-officedocument.presentationml.presentation": "pptx",
 };
 
-function createUploadKey(userId: string, mime: (typeof LIMITS.upload.image.mimes)[number]): string {
+function createUploadKey(userId: string, mime: MessageMime): string {
   return `u/${userId}/${crypto.randomUUID()}.${EXT_BY_MIME[mime]}`;
 }
 

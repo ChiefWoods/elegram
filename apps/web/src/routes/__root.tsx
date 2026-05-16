@@ -5,10 +5,12 @@ import { TooltipProvider } from "@workspace/ui/components/tooltip";
 import { useEffect } from "react";
 
 import { NotFoundComponent } from "@/components/state/not-found";
+import { ErrorComponent } from "@/components/state/error";
 
 export const Route = createRootRoute({
   component: RootComponent,
   notFoundComponent: NotFoundComponent,
+  errorComponent: ErrorComponent,
 });
 
 function RootComponent() {

@@ -16,6 +16,28 @@ export const LIMITS = {
       maxBytes: 5 * 1024 * 1024,
       mimes: ["image/jpeg", "image/png", "image/webp", "image/gif"] as const,
     },
+    message: {
+      image: {
+        maxBytes: 10 * 1024 * 1024,
+        mimes: ["image/jpeg", "image/png", "image/webp", "image/gif"] as const,
+      },
+      document: {
+        maxBytes: 25 * 1024 * 1024,
+        mimes: [
+          "application/pdf",
+          "text/plain",
+          "text/csv",
+          "application/json",
+          "application/zip",
+          "application/msword",
+          "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+          "application/vnd.ms-excel",
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+          "application/vnd.ms-powerpoint",
+          "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        ] as const,
+      },
+    },
   },
 } as const;
 

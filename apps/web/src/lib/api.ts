@@ -2,7 +2,9 @@ import type { AppType } from "@elegram/server";
 
 import { hc, parseResponse, type InferRequestType, type InferResponseType } from "hono/client";
 
-const baseURL = import.meta.env.VITE_SERVER_URL ?? "http://localhost:3000";
+import { env } from "./env";
+
+const baseURL = env.VITE_SERVER_URL;
 
 const honoClient = hc<AppType>(baseURL, {
   fetch: (input: RequestInfo | URL, init?: RequestInit) =>

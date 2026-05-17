@@ -112,19 +112,30 @@ const router = new Hono<{ Variables: AuthzVariables }>()
     const key = c.req.param("key");
     const asset = await prisma.asset.findUnique({
       where: { key },
-      select: { key: true },
+      select: { key: true, mime: true },
     });
     if (!asset) {
       return c.json({ error: "Not Found" }, 404);
     }
 
     const direct = publicUrl(key);
-    if (direct) {
-      return c.redirect(direct, 302);
+    const sourceUrl = direct ?? presignGet({ key });
+    const upstream = await fetch(sourceUrl);
+    if (!upstream.ok || !upstream.body) {
+      return c.json({ error: "Failed to fetch attachment" }, 502);
     }
 
-    const signed = presignGet({ key });
-    return c.redirect(signed, 302);
+    const headers = new Headers({
+      "Content-Type": upstream.headers.get("content-type") ?? asset.mime,
+      "Cache-Control": "private, max-age=60",
+    });
+    const contentLength = upstream.headers.get("content-length");
+    if (contentLength) headers.set("Content-Length", contentLength);
+
+    return new Response(upstream.body, {
+      status: 200,
+      headers,
+    });
   });
 
 export default router;

@@ -82,11 +82,22 @@ describe("GET /api/uploads/:key", () => {
     expect(res.status).toBe(404);
   });
 
-  test("302 redirect to presigned GET when no public URL", async () => {
-    prisma.asset.findUnique.mockResolvedValue({ key: "u/u1/abc.png" });
+  test("200 streams presigned GET response when no public URL", async () => {
+    prisma.asset.findUnique.mockResolvedValue({ key: "u/u1/abc.png", mime: "image/png" });
+    const fetchSpy = vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response("ok", {
+        status: 200,
+        headers: {
+          "content-type": "image/png",
+          "content-length": "2",
+        },
+      }),
+    );
     const client = authedClient(uploadsRouter, "u1") as unknown as KeyClient;
     const res = await client[":key"].$get({ param: { key: "u/u1/abc.png" } });
-    expect(res.status).toBe(302);
-    expect(res.headers.get("Location")).toBe("https://get.example/u/u1/abc.png");
+    expect(fetchSpy).toHaveBeenCalledWith("https://get.example/u/u1/abc.png");
+    expect(res.status).toBe(200);
+    expect(res.headers.get("Content-Type")).toBe("image/png");
+    expect(await res.text()).toBe("ok");
   });
 });

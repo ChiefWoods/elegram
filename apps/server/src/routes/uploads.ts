@@ -39,6 +39,7 @@ const UploadBody = z
   .object({
     mime: z.enum(MESSAGE_MIMES),
     size: z.number().int().min(1),
+    name: z.string().trim().min(1).max(255).optional(),
   })
   .superRefine((value, ctx) => {
     const maxBytes = MAX_BYTES_BY_MIME[value.mime];
@@ -83,7 +84,7 @@ const router = new Hono<{ Variables: AuthzVariables }>()
   )
   .post("/presign", zValidator("json", UploadBody), async (c) => {
     const userId = c.var.user!.id;
-    const { mime, size } = c.req.valid("json");
+    const { mime, size, name } = c.req.valid("json");
 
     const key = createUploadKey(userId, mime);
     const url = presignPut({ key, mime });
@@ -92,6 +93,7 @@ const router = new Hono<{ Variables: AuthzVariables }>()
       data: {
         key,
         uploaderId: userId,
+        originalName: name,
         mime,
         size,
       },

@@ -30,9 +30,10 @@ function RootComponent() {
         <Outlet />
       </TooltipProvider>
       <Toaster richColors position="bottom-right" closeButton />
-      <TanStackDevtools plugins={[formDevtoolsPlugin()]} />
-      <TanStackRouterDevtools />
-      <ReactQueryDevtools initialIsOpen={false} />
+      {/* avoid conflicting positions with other devtools */}
+      <TanStackDevtools plugins={[formDevtoolsPlugin()]} config={{ position: "top-right" }} />
+      <TanStackRouterDevtools position="bottom-left" />
+      <ReactQueryDevtools initialIsOpen={false} position="left" />
     </>
   );
 }

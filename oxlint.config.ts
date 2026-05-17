@@ -8,6 +8,10 @@ export default defineConfig({
       name: "@tanstack/router",
       specifier: "@tanstack/eslint-plugin-router",
     },
+    {
+      name: "@tanstack/query",
+      specifier: "@tanstack/eslint-plugin-query",
+    },
   ],
   overrides: [
     {

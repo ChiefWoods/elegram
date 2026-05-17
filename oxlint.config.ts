@@ -3,6 +3,12 @@ import { defineConfig } from "oxlint";
 export default defineConfig({
   $schema: "./node_modules/oxlint/configuration_schema.json",
   ignorePatterns: ["node_modules/**", "apps/web/src/routeTree.gen.ts"],
+  jsPlugins: [
+    {
+      name: "@tanstack/router",
+      specifier: "@tanstack/eslint-plugin-router",
+    },
+  ],
   overrides: [
     {
       files: ["**/*.{ts,tsx}"],

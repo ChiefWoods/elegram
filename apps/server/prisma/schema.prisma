@@ -41,6 +41,7 @@ model User {
 model Asset {
   key                 String         @id
   uploaderId          String?
+  originalName        String?        @db.VarChar(255)
   mime                String
   size                Int
   createdAt           DateTime       @default(now())

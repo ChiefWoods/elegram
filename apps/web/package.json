@@ -20,6 +20,7 @@
     "@tanstack/react-devtools": "^0.10.5",
     "@tanstack/react-form": "^1.32.0",
     "@tanstack/react-form-devtools": "^0.2.27",
+    "@tanstack/react-query-devtools": "^5.100.10",
     "@tanstack/react-router": "^1.169.2",
     "@tanstack/react-router-devtools": "^1.166.13",
     "@workspace/ui": "workspace:*",

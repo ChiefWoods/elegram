@@ -1,5 +1,6 @@
 import { TanStackDevtools } from "@tanstack/react-devtools";
 import { formDevtoolsPlugin } from "@tanstack/react-form-devtools";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { HeadContent, Outlet, createRootRoute } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import { Toaster } from "@workspace/ui/components/sonner";
@@ -31,6 +32,7 @@ function RootComponent() {
       <Toaster richColors position="bottom-right" closeButton />
       <TanStackDevtools plugins={[formDevtoolsPlugin()]} />
       <TanStackRouterDevtools />
+      <ReactQueryDevtools initialIsOpen={false} />
     </>
   );
 }

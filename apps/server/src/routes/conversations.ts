@@ -30,6 +30,15 @@ const CreateBody = z
     path: ["memberIds"],
   });
 
+const CreateMessageBody = z
+  .object({
+    body: z.string().trim().min(LIMITS.message.body.min).max(LIMITS.message.body.max).optional(),
+    attachmentKey: z.string().min(1).optional(),
+  })
+  .refine((d) => d.body || d.attachmentKey, {
+    message: "Message must include body or attachmentKey",
+  });
+
 const PatchGroupBody = z.object({
   title: z
     .string()
@@ -160,21 +169,10 @@ const router = new Hono<{ Variables: AuthzVariables }>()
       const dmKey = dmKeyFor(userId, otherId);
       const existing = await prisma.conversation.findUnique({ where: { dmKey } });
       if (existing) return c.json({ conversation: existing }, 200);
-
-      const created = await prisma.conversation.create({
-        data: {
-          isGroup: false,
-          dmKey,
-          members: {
-            create: [
-              { userId, role: "MEMBER" },
-              { userId: otherId, role: "MEMBER" },
-            ],
-          },
-        },
-      });
-      publishConversationEvent([userId, otherId], created.id);
-      return c.json({ conversation: created }, 201);
+      return c.json(
+        { error: "Cannot create empty DM. Send a first message to start the chat." },
+        400,
+      );
     }
 
     const uniqueMembers = Array.from(new Set(body.memberIds.filter((id) => id !== userId)));
@@ -202,6 +200,94 @@ const router = new Hono<{ Variables: AuthzVariables }>()
     });
     publishConversationEvent([userId, ...uniqueMembers], created.id);
     return c.json({ conversation: created }, 201);
+  })
+  .post("/dm/:userId/messages", zValidator("json", CreateMessageBody), async (c) => {
+    const senderId = c.var.user!.id;
+    const recipientId = c.req.param("userId");
+    const body = c.req.valid("json");
+
+    if (!recipientId || recipientId === senderId) {
+      return c.json({ error: "Cannot DM yourself" }, 400);
+    }
+
+    const recipient = await prisma.user.findUnique({
+      where: { id: recipientId },
+      select: { id: true },
+    });
+    if (!recipient) return c.json({ error: "User not found" }, 404);
+
+    if (body.attachmentKey) {
+      const asset = await prisma.asset.findUnique({
+        where: { key: body.attachmentKey },
+        select: { uploaderId: true },
+      });
+      if (!asset || asset.uploaderId !== senderId) {
+        return c.json({ error: "Invalid attachment" }, 400);
+      }
+    }
+
+    const dmKey = dmKeyFor(senderId, recipientId);
+    const existing = await prisma.conversation.findUnique({
+      where: { dmKey },
+      select: { id: true },
+    });
+    const createdConversation =
+      existing ??
+      (await prisma.conversation.create({
+        data: {
+          isGroup: false,
+          dmKey,
+          members: {
+            create: [
+              { userId: senderId, role: "MEMBER" },
+              { userId: recipientId, role: "MEMBER" },
+            ],
+          },
+        },
+        select: { id: true },
+      }));
+    const conversationId = createdConversation.id;
+
+    const message = await prisma.message.create({
+      data: {
+        conversationId,
+        senderId,
+        body: body.body ?? null,
+        attachmentKey: body.attachmentKey ?? null,
+      },
+      select: {
+        id: true,
+        conversationId: true,
+        senderId: true,
+        body: true,
+        attachmentKey: true,
+        attachment: { select: { mime: true } },
+        createdAt: true,
+        editedAt: true,
+        deletedAt: true,
+      },
+    });
+
+    await prisma.conversation.update({
+      where: { id: conversationId },
+      data: { lastMessageAt: message.createdAt },
+    });
+
+    for (const userId of [senderId, recipientId]) {
+      publishToUser(userId, {
+        type: RealtimeEventType.MessageCreated,
+        conversationId,
+        messageId: message.id,
+      });
+      if (!existing) {
+        publishToUser(userId, {
+          type: RealtimeEventType.ConversationUpdated,
+          conversationId,
+        });
+      }
+    }
+
+    return c.json({ conversationId, message }, 201);
   })
   .get("/:id", requireMember, async (c) => {
     const conv = await prisma.conversation.findUnique({

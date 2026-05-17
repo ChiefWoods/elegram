@@ -12,7 +12,8 @@ const prisma = {
     update: vi.fn(),
     delete: vi.fn(),
   },
-  message: { count: vi.fn() },
+  message: { count: vi.fn(), create: vi.fn() },
+  asset: { findUnique: vi.fn() },
   $transaction: vi.fn(),
 };
 const publishToUser = vi.fn();
@@ -118,28 +119,16 @@ describe("POST /api/conversations (DM)", () => {
     await expect(res.json()).resolves.toMatchObject({ conversation: { id: "existing" } });
   });
 
-  test("creates a new DM with sorted dmKey (201)", async () => {
+  test("rejects creating a new empty DM when one does not exist", async () => {
     prisma.user.findUnique.mockResolvedValue({ id: "u2" });
     prisma.conversation.findUnique.mockResolvedValue(null);
-    prisma.conversation.create.mockResolvedValue({ id: "new-dm", isGroup: false });
 
     const res = await authedClient(convRouter, "u3").index.$post({
       json: { memberIds: ["u2"] },
     });
-    expect(res.status).toBe(201);
-    expect(prisma.conversation.create).toHaveBeenCalledWith(
-      expect.objectContaining({
-        data: expect.objectContaining({ dmKey: "u2:u3", isGroup: false }),
-      }),
-    );
-    expect(publishToUser).toHaveBeenCalledWith(
-      "u2",
-      expect.objectContaining({ type: "conversation.updated", conversationId: "new-dm" }),
-    );
-    expect(publishToUser).toHaveBeenCalledWith(
-      "u3",
-      expect.objectContaining({ type: "conversation.updated", conversationId: "new-dm" }),
-    );
+    expect(res.status).toBe(400);
+    expect(prisma.conversation.create).not.toHaveBeenCalled();
+    expect(publishToUser).not.toHaveBeenCalled();
   });
 
   test("400 when DM body has multiple members", async () => {
@@ -226,6 +215,56 @@ describe("POST /api/conversations (group)", () => {
     expect(publishToUser).toHaveBeenCalledWith(
       "u1",
       expect.objectContaining({ type: "conversation.updated", conversationId: "grp-solo" }),
+    );
+  });
+});
+
+describe("POST /api/conversations/dm/:userId/messages", () => {
+  test("404 when recipient does not exist", async () => {
+    prisma.user.findUnique.mockResolvedValue(null);
+
+    const res = await authedClient(convRouter, "u1").dm[":userId"].messages.$post({
+      param: { userId: "u2" },
+      json: { body: "hi" },
+    });
+    expect(res.status).toBe(404);
+  });
+
+  test("creates DM + first message when no prior conversation exists", async () => {
+    prisma.user.findUnique.mockResolvedValue({ id: "u2" });
+    prisma.conversation.findUnique.mockResolvedValue(null);
+    prisma.conversation.create.mockResolvedValue({ id: "new-dm" });
+    const createdAt = new Date();
+    prisma.message.create.mockResolvedValue({
+      id: "m-new",
+      conversationId: "new-dm",
+      senderId: "u1",
+      body: "hello",
+      attachmentKey: null,
+      createdAt,
+      editedAt: null,
+      deletedAt: null,
+    });
+    prisma.conversation.update.mockResolvedValue({});
+
+    const res = await authedClient(convRouter, "u1").dm[":userId"].messages.$post({
+      param: { userId: "u2" },
+      json: { body: "hello" },
+    });
+    expect(res.status).toBe(201);
+    expect(prisma.conversation.create).toHaveBeenCalledTimes(1);
+    expect(prisma.message.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          conversationId: "new-dm",
+          senderId: "u1",
+          body: "hello",
+        }),
+      }),
+    );
+    expect(publishToUser).toHaveBeenCalledWith(
+      "u2",
+      expect.objectContaining({ type: "message.created", conversationId: "new-dm" }),
     );
   });
 });

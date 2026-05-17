@@ -222,9 +222,10 @@ export function SignupForm({ onSwitch }: { onSwitch: () => void }) {
             selector={(state) => ({
               canSubmit: state.canSubmit,
               isSubmitting: state.isSubmitting,
+              isSchemaValid: signupSchema.safeParse(state.values).success,
             })}
-            children={({ canSubmit, isSubmitting }) => (
-              <AuthFormButton type="submit" disabled={!canSubmit || isSubmitting}>
+            children={({ canSubmit, isSubmitting, isSchemaValid }) => (
+              <AuthFormButton type="submit" disabled={!canSubmit || !isSchemaValid || isSubmitting}>
                 {isSubmitting ? <Spinner aria-label="Creating account" /> : "Create account"}
               </AuthFormButton>
             )}

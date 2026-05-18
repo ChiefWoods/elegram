@@ -249,6 +249,7 @@ export function CreateGroupFlow({
         <div className="mt-auto p-5">
           <button
             type="button"
+            aria-label="Continue to members"
             onClick={() => setStep("members")}
             disabled={!canContinue || uploadAvatarMutation.isPending}
             className="ml-auto grid size-14 place-items-center rounded-full bg-primary text-primary-foreground disabled:opacity-50"
@@ -354,6 +355,7 @@ export function CreateGroupFlow({
       <div className="mt-auto p-5">
         <button
           type="button"
+          aria-label="Create group"
           onClick={() => createMutation.mutate()}
           disabled={createMutation.isPending}
           aria-busy={createMutation.isPending}

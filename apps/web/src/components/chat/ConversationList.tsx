@@ -11,7 +11,7 @@ import { useMemo } from "react";
 import { InitialsAvatar } from "@/components/common/InitialsAvatar";
 import { usePinnedConversations } from "@/hooks/use-pinned-conversations";
 
-import type { ConversationSummary } from "./types/conversation";
+import type { ConversationSummary } from "../../types/conversation";
 
 export function ConversationList({
   items,

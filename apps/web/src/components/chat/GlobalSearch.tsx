@@ -14,7 +14,7 @@ import { InitialsAvatar } from "@/components/common/InitialsAvatar";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { searchEverything, type SearchUserDTO } from "@/lib/api";
 
-import type { ConversationSummary } from "./types/conversation";
+import type { ConversationSummary } from "../../types/conversation";
 
 export function GlobalSearch({
   value,

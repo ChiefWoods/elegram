@@ -43,7 +43,7 @@ import { changePassword, signOut, updateUser, useSession } from "@/lib/auth-clie
 import { AVATAR_MIMES, validateAvatar, type AvatarMime } from "@/lib/avatar";
 import { env } from "@/lib/env";
 
-import type { ConversationSummary } from "./types/conversation";
+import type { ConversationSummary } from "../../types/conversation";
 
 import { ChangePasswordForm, type ChangePasswordValues } from "./ChangePasswordForm";
 import { ConversationList } from "./ConversationList";

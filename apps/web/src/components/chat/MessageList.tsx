@@ -14,7 +14,7 @@ import { deleteMessage, editMessage } from "@/lib/api";
 import { attachmentLabelForMime, isImageMime } from "@/lib/attachments";
 import { formatDayLabel, toIsoDate } from "@/lib/utils";
 
-import type { Message } from "./types/message";
+import type { Message } from "../../types/message";
 
 function documentFilename(message: Message): string {
   const label = message.attachmentName?.trim();

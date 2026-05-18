@@ -29,7 +29,7 @@ import {
   uploadUrl,
 } from "@/lib/chat";
 
-import type { MessageListHandle } from "./types/message";
+import type { MessageListHandle } from "../../types/message";
 
 import { ChatHeader, type ChatHeaderHandle } from "./ChatHeader";
 import { DMInfoPanel } from "./DMInfoPanel";

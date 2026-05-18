@@ -33,7 +33,7 @@ import {
 } from "@/lib/api";
 import { uploadUrl } from "@/lib/chat";
 
-import type { GroupMember, Role } from "./types/group";
+import type { GroupMember, Role } from "../../types/group";
 
 import { DetailRow } from "../common/DetailRow";
 import { AddMembersDialog } from "./AddMembersDialog";

@@ -1,7 +1,7 @@
-import type { ConversationSummary } from "@/components/chat/types/conversation";
-import type { GroupMember } from "@/components/chat/types/group";
-import type { Message } from "@/components/chat/types/message";
 import type { ConversationDetailDTO, ConversationSummaryDTO, MessageDTO } from "@/lib/api";
+import type { ConversationSummary } from "@/types/conversation";
+import type { GroupMember } from "@/types/group";
+import type { Message } from "@/types/message";
 
 import { attachmentLabelForMime } from "@/lib/attachments";
 import { env } from "@/lib/env";

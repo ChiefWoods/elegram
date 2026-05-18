@@ -306,6 +306,8 @@ export function Sidebar({
   const queryClient = useQueryClient();
   const [view, setView] = useState<SidebarView>("chats");
   const [searchQuery, setSearchQuery] = useState("");
+  const [orderedConversationIds, setOrderedConversationIds] = useState<string[]>([]);
+  const [focusedConversationId, setFocusedConversationId] = useState<string | undefined>(activeId);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const isSearching = searchQuery.length > 0;
   const { data: session } = useSession();
@@ -315,6 +317,12 @@ export function Sidebar({
     (theme === "system" &&
       typeof window !== "undefined" &&
       window.matchMedia("(prefers-color-scheme: dark)").matches);
+  const effectiveFocusedConversationId =
+    focusedConversationId && orderedConversationIds.includes(focusedConversationId)
+      ? focusedConversationId
+      : activeId && orderedConversationIds.includes(activeId)
+        ? activeId
+        : orderedConversationIds[0];
 
   useEffect(() => {
     const focusSearchInput = () => {
@@ -327,22 +335,62 @@ export function Sidebar({
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.repeat) return;
-      if (event.key !== "/") return;
       if (event.metaKey || event.ctrlKey || event.altKey) return;
       if (isEditableTarget(event.target)) return;
 
-      event.preventDefault();
-      if (view !== "chats") {
-        setView("chats");
+      if (event.key === "/") {
+        event.preventDefault();
+        if (view !== "chats") {
+          setView("chats");
+        }
+        focusSearchInput();
+        return;
       }
-      focusSearchInput();
+
+      if (
+        view !== "chats" ||
+        isSearching ||
+        isLoadingConversations ||
+        orderedConversationIds.length === 0
+      ) {
+        return;
+      }
+
+      if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+        event.preventDefault();
+        const currentId = effectiveFocusedConversationId;
+        const currentIndex = currentId ? orderedConversationIds.indexOf(currentId) : 0;
+        const normalizedIndex = currentIndex >= 0 ? currentIndex : 0;
+        const nextIndex =
+          event.key === "ArrowDown"
+            ? Math.min(normalizedIndex + 1, orderedConversationIds.length - 1)
+            : Math.max(normalizedIndex - 1, 0);
+        setFocusedConversationId(orderedConversationIds[nextIndex]);
+        return;
+      }
+
+      if (event.key === "Enter") {
+        const targetId = effectiveFocusedConversationId;
+        if (!targetId) return;
+        event.preventDefault();
+        onSelect(targetId);
+        setFocusedConversationId(targetId);
+      }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [view]);
+  }, [
+    view,
+    isSearching,
+    isLoadingConversations,
+    orderedConversationIds,
+    focusedConversationId,
+    effectiveFocusedConversationId,
+    onSelect,
+  ]);
 
   const meQuery = useQuery({
     queryKey: ["me"],
@@ -587,7 +635,13 @@ export function Sidebar({
                 <Spinner aria-label="Loading conversations" />
               </div>
             ) : (
-              <ConversationList items={conversations} activeId={activeId} onSelect={onSelect} />
+              <ConversationList
+                items={conversations}
+                activeId={activeId}
+                focusedId={effectiveFocusedConversationId}
+                onSelect={onSelect}
+                onOrderedIdsChange={setOrderedConversationIds}
+              />
             )}
           </div>
           <div className="pointer-events-none absolute right-4 bottom-4">

@@ -6,7 +6,7 @@ import {
 } from "@workspace/ui/components/context-menu";
 import { cn } from "@workspace/ui/lib/utils";
 import { CheckCheck, Pin, PinOff } from "lucide-react";
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 
 import { InitialsAvatar } from "@/components/common/InitialsAvatar";
 import { usePinnedConversations } from "@/hooks/use-pinned-conversations";
@@ -16,13 +16,18 @@ import type { ConversationSummary } from "../../types/conversation";
 export function ConversationList({
   items,
   activeId,
+  focusedId,
   onSelect,
+  onOrderedIdsChange,
 }: {
   items: ConversationSummary[];
   activeId?: string;
+  focusedId?: string;
   onSelect: (id: string) => void;
+  onOrderedIdsChange?: (orderedIds: string[]) => void;
 }) {
   const { pinned, toggle } = usePinnedConversations();
+  const rowRefs = useRef<Record<string, HTMLButtonElement | null>>({});
 
   const pinnedSet = useMemo(() => new Set(pinned), [pinned]);
   const orderedItems = useMemo(() => {
@@ -37,20 +42,34 @@ export function ConversationList({
     return [...pinnedItems, ...others];
   }, [items, pinned, pinnedSet]);
 
+  useEffect(() => {
+    onOrderedIdsChange?.(orderedItems.map((item) => item.id));
+  }, [orderedItems, onOrderedIdsChange]);
+
+  useEffect(() => {
+    if (!focusedId) return;
+    rowRefs.current[focusedId]?.scrollIntoView({ block: "nearest" });
+  }, [focusedId]);
+
   return (
     <nav className="flex flex-col py-1">
       {orderedItems.map((c) => {
         const active = c.id === activeId;
+        const focused = c.id === focusedId;
         const isPinned = pinnedSet.has(c.id);
         return (
           <ContextMenu key={c.id}>
             <ContextMenuTrigger asChild>
               <button
+                ref={(el) => {
+                  rowRefs.current[c.id] = el;
+                }}
                 type="button"
                 onClick={() => onSelect(c.id)}
                 className={cn(
-                  "hover:bg-sidebar-accent flex w-full items-start gap-3 px-3 py-2.5 text-left",
+                  "hover:bg-sidebar-accent flex w-full items-start gap-3 px-3 py-2.5 text-left outline-none",
                   active && "bg-primary/10 dark:bg-primary/20",
+                  focused && "ring-primary/40 ring-1",
                 )}
               >
                 <InitialsAvatar name={c.name} imageUrl={c.imageUrl} online={c.online} />

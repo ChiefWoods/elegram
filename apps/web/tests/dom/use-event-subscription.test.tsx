@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { renderHook } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { useEventSubscription } from "@/hooks/use-event-subscription";
 
@@ -30,6 +30,10 @@ class MockEventSource {
 }
 
 describe("useEventSubscription", () => {
+  beforeEach(() => {
+    MockEventSource.instances = [];
+  });
+
   it("invalidates message/conversation queries and updates presence cache", () => {
     vi.stubGlobal("EventSource", MockEventSource as unknown as typeof EventSource);
     const queryClient = new QueryClient({
@@ -61,5 +65,43 @@ describe("useEventSubscription", () => {
     expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ["conversations"] });
     expect(onConversationDeleted).toHaveBeenCalledWith("conv-3");
     expect(queryClient.getQueryData(["presence"])).toEqual({ userIds: ["b", "c"] });
+  });
+
+  it("keeps a single EventSource connection across rerenders", () => {
+    vi.stubGlobal("EventSource", MockEventSource as unknown as typeof EventSource);
+    const queryClient = new QueryClient({
+      defaultOptions: {
+        queries: { retry: false },
+      },
+    });
+    const firstDeletedSpy = vi.fn();
+    const secondDeletedSpy = vi.fn();
+
+    function Wrapper({ children }: { children: ReactNode }) {
+      return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
+    }
+
+    const { rerender } = renderHook(
+      ({ onConversationDeleted }) => useEventSubscription({ onConversationDeleted }),
+      {
+        initialProps: { onConversationDeleted: firstDeletedSpy },
+        wrapper: Wrapper,
+      },
+    );
+
+    expect(MockEventSource.instances).toHaveLength(1);
+
+    rerender({ onConversationDeleted: secondDeletedSpy });
+
+    expect(MockEventSource.instances).toHaveLength(1);
+    expect(MockEventSource.instances[0]?.close).not.toHaveBeenCalled();
+
+    const source = MockEventSource.instances[0];
+    if (!source) throw new Error("EventSource was not created");
+
+    source.emit("conversation.deleted", { conversationId: "conv-rerender" });
+
+    expect(firstDeletedSpy).not.toHaveBeenCalled();
+    expect(secondDeletedSpy).toHaveBeenCalledWith("conv-rerender");
   });
 });

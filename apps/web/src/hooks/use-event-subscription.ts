@@ -1,5 +1,5 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 import type { PresenceResponse } from "@/lib/api";
 
@@ -18,7 +18,11 @@ export function useEventSubscription(options?: {
   onConversationDeleted?: (conversationId: string) => void;
 }): void {
   const queryClient = useQueryClient();
-  const onConversationDeleted = options?.onConversationDeleted;
+  const onConversationDeletedRef = useRef(options?.onConversationDeleted);
+
+  useEffect(() => {
+    onConversationDeletedRef.current = options?.onConversationDeleted;
+  }, [options?.onConversationDeleted]);
 
   useEffect(() => {
     const source = new EventSource(`${env.VITE_SERVER_URL}/api/events`, {
@@ -44,7 +48,7 @@ export function useEventSubscription(options?: {
     const onConversationDeletedEvent = (raw: MessageEvent): void => {
       const data = JSON.parse(raw.data) as ConversationEvent;
       invalidateConversations();
-      onConversationDeleted?.(data.conversationId);
+      onConversationDeletedRef.current?.(data.conversationId);
     };
 
     const onPresence = (raw: MessageEvent): void => {
@@ -72,5 +76,5 @@ export function useEventSubscription(options?: {
     return () => {
       source.close();
     };
-  }, [queryClient, onConversationDeleted]);
+  }, [queryClient]);
 }

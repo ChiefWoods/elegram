@@ -282,6 +282,7 @@ function SettingsView({
 export function Sidebar({
   conversations,
   conversationDTOs,
+  isLoadingConversations,
   currentUserId,
   activeId,
   onSelect,
@@ -289,6 +290,7 @@ export function Sidebar({
 }: {
   conversations: ConversationSummary[];
   conversationDTOs: ConversationSummaryDTO[];
+  isLoadingConversations?: boolean;
   currentUserId: string;
   activeId?: string;
   onSelect: (id: string) => void;
@@ -545,6 +547,10 @@ export function Sidebar({
                   onSelectUser?.(user);
                 }}
               />
+            ) : isLoadingConversations ? (
+              <div className="flex h-full items-center justify-center py-3">
+                <Spinner aria-label="Loading conversations" />
+              </div>
             ) : (
               <ConversationList items={conversations} activeId={activeId} onSelect={onSelect} />
             )}

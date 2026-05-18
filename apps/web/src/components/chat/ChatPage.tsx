@@ -158,6 +158,7 @@ export function ChatPage({
         <Sidebar
           conversations={conversations}
           conversationDTOs={conversationsQuery.data?.conversations ?? []}
+          isLoadingConversations={conversationsQuery.isLoading}
           currentUserId={meId}
           activeId={resolvedActiveId}
           onSelect={selectConversation}

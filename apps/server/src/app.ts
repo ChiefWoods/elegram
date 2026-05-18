@@ -46,7 +46,9 @@ app.use("*", async (c, next) => {
   return next();
 });
 
-app.use(logger());
+if (process.env.NODE_ENV !== "test") {
+  app.use(logger());
+}
 
 const routes = app
   .route("/api/auth", authRouter)

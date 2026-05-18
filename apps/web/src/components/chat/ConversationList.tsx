@@ -75,9 +75,7 @@ export function ConversationList({
                 <InitialsAvatar name={c.name} imageUrl={c.imageUrl} online={c.online} />
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center justify-between gap-2">
-                    <span className="truncate text-sm font-semibold">
-                      {c.name.length > 10 ? `${c.name.slice(0, 7)}...` : c.name}
-                    </span>
+                    <span className="min-w-0 flex-1 truncate text-sm font-semibold">{c.name}</span>
                     <span className="text-muted-foreground shrink-0 text-[11px]">{c.time}</span>
                   </div>
                   <div className="mt-0.5 flex items-center justify-between gap-2">

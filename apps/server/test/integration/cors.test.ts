@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 
+import app from "../../src/app";
 import { env } from "../../src/env";
-import app from "../../src/index";
 
 describe("CORS integration (real app)", () => {
   test("allows preflight from configured CORS_ORIGIN with credentials", async () => {

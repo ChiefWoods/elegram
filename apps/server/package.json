@@ -3,7 +3,7 @@
   "type": "module",
   "private": true,
   "exports": {
-    ".": "./src/index.ts",
+    ".": "./src/app.ts",
     "./limits": "./src/lib/limits.ts"
   },
   "scripts": {

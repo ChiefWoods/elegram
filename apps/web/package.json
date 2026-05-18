@@ -17,7 +17,9 @@
     "typecheck": "tsc --noEmit",
     "doctor": "bunx react-doctor",
     "preview": "vite preview",
-    "generate-routes": "tsr generate"
+    "generate-routes": "tsr generate",
+    "docker:build": "docker build --progress=plain -f Dockerfile -t elegram-web:local ../..",
+    "docker:run": "docker run --rm -it -p 8080:80 -e PORT=80 elegram-web:local"
   },
   "dependencies": {
     "@better-auth/passkey": "^1.6.10",

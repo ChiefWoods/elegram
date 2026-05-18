@@ -15,6 +15,8 @@
     "db:migrate:deploy": "bunx --bun prisma migrate deploy",
     "db:generate": "bunx --bun prisma generate",
     "db:studio": "bunx --bun prisma studio",
+    "docker:build": "docker build --progress=plain -f Dockerfile -t elegram-server:local ../..",
+    "docker:run": "docker run --rm -it --env-file .env.production -p 3000:3000 elegram-server:local",
     "docker:dev:up": "docker compose -f docker-compose.dev.yml up -d",
     "docker:dev:down": "docker compose -f docker-compose.dev.yml down",
     "docker:dev:start": "docker compose -f docker-compose.dev.yml start",

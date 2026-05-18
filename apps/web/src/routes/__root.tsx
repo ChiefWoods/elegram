@@ -18,7 +18,7 @@ export const Route = createRootRoute({
 
 function RootComponent() {
   useEffect(() => {
-    if (import.meta.env.DEV) {
+    if (import.meta.env.DEV && import.meta.env.MODE !== "test") {
       void import("react-grab");
     }
   }, []);

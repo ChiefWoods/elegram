@@ -6,7 +6,16 @@ import {
   ContextMenuTrigger,
 } from "@workspace/ui/components/context-menu";
 import { CheckCheck, ChevronDown, Copy, FileText, Pencil, Trash2 } from "lucide-react";
-import { Fragment, useEffect, useImperativeHandle, useRef, useState, type Ref } from "react";
+import {
+  Fragment,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+  type Ref,
+  type SyntheticEvent,
+} from "react";
 import { toast } from "sonner";
 
 import { InitialsAvatar } from "@/components/common/InitialsAvatar";
@@ -295,6 +304,7 @@ export function MessageList({
   const queryClient = useQueryClient();
   const scrollRef = useRef<HTMLDivElement>(null);
   const lastMessageIdRef = useRef<string | null>(null);
+  const shouldStickToBottomRef = useRef(true);
   const [showFab, setShowFab] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
 
@@ -316,19 +326,50 @@ export function MessageList({
     onError: () => toast.error("Failed to delete message."),
   });
 
+  const syncBottomState = useCallback(() => {
+    const container = scrollRef.current;
+    if (!container) return;
+    const isAtBottom = container.scrollTop + container.clientHeight >= container.scrollHeight - 1;
+    shouldStickToBottomRef.current = isAtBottom;
+    setShowFab(!isAtBottom);
+  }, []);
+
   const handleScroll = () => {
     const el = scrollRef.current;
     if (!el) return;
-    const distance = el.scrollHeight - el.scrollTop - el.clientHeight;
-    setShowFab(distance > 75);
+    syncBottomState();
     if (el.scrollTop < 120 && hasMore && !isLoadingMore) onLoadMore?.();
   };
 
-  const scrollToBottom = (behavior: ScrollBehavior = "smooth") => {
-    const el = scrollRef.current;
-    if (!el) return;
-    el.scrollTo({ top: el.scrollHeight, behavior });
+  const scrollToBottom = useCallback(
+    (behavior: ScrollBehavior = "smooth") => {
+      const container = scrollRef.current;
+      if (!container) return;
+      shouldStickToBottomRef.current = true;
+      setShowFab(false);
+      container.scrollTo({ top: container.scrollHeight, behavior });
+      requestAnimationFrame(() => {
+        syncBottomState();
+      });
+    },
+    [syncBottomState],
+  );
+
+  const handleLoadCapture = (event: SyntheticEvent<HTMLDivElement>) => {
+    const target = event.target;
+    if (!(target instanceof HTMLImageElement)) return;
+    if (!shouldStickToBottomRef.current) {
+      syncBottomState();
+      return;
+    }
+    requestAnimationFrame(() => {
+      scrollToBottom("auto");
+    });
   };
+
+  useEffect(() => {
+    syncBottomState();
+  }, [syncBottomState]);
 
   useEffect(() => {
     const lastId = items.at(-1)?.id ?? null;
@@ -344,11 +385,11 @@ export function MessageList({
       return;
     }
 
-    if (previousLastId !== lastId) {
-      scrollToBottom("smooth");
-      lastMessageIdRef.current = lastId;
+    if (previousLastId !== lastId && shouldStickToBottomRef.current) {
+      scrollToBottom("auto");
     }
-  }, [items]);
+    lastMessageIdRef.current = lastId;
+  }, [items, scrollToBottom]);
 
   useImperativeHandle(ref, () => ({
     scrollToDate(target: Date) {
@@ -376,6 +417,7 @@ export function MessageList({
       <div
         ref={scrollRef}
         onScroll={handleScroll}
+        onLoadCapture={handleLoadCapture}
         className="flex-1 overflow-y-auto px-4 pt-4 pb-20"
       >
         {items.length === 0 && (

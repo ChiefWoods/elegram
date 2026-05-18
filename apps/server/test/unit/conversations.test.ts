@@ -338,9 +338,22 @@ describe("DELETE /api/conversations/:id/leave", () => {
     });
     prisma.conversation.findUnique.mockResolvedValue({ isGroup: true });
     prisma.conversationMember.delete.mockResolvedValue({});
+    prisma.conversationMember.findMany.mockResolvedValue([{ userId: "u2" }, { userId: "u3" }]);
     const res = await authedClient(convRouter, "u1")[":id"].leave.$delete({ param: { id: "c1" } });
     expect(res.status).toBe(200);
     expect(prisma.conversationMember.delete).toHaveBeenCalledTimes(1);
+    expect(publishToUser).toHaveBeenCalledWith(
+      "u2",
+      expect.objectContaining({ type: "conversation.updated", conversationId: "c1" }),
+    );
+    expect(publishToUser).toHaveBeenCalledWith(
+      "u3",
+      expect.objectContaining({ type: "conversation.updated", conversationId: "c1" }),
+    );
+    expect(publishToUser).toHaveBeenCalledWith(
+      "u1",
+      expect.objectContaining({ type: "conversation.deleted", conversationId: "c1" }),
+    );
   });
 });
 

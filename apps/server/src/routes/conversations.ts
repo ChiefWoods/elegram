@@ -377,6 +377,9 @@ const router = new Hono<{ Variables: AuthzVariables }>()
         },
       },
     });
+    const remainingMemberIds = await memberIdsForConversation(member.conversationId);
+    publishConversationEvent(remainingMemberIds, member.conversationId);
+    publishConversationEvent([member.userId], member.conversationId, true);
     return c.json({ ok: true });
   })
   .post("/:id/transfer", requireMember, zValidator("json", TransferBody), async (c) => {

@@ -96,21 +96,23 @@ describe("core api integration (postgres)", () => {
     const b = await createUser({ username: "b" });
     const client = authedClient(a.id);
 
-    const first = await client.api.conversations.$post({
-      json: { memberIds: [b.id] },
+    const first = await client.api.conversations.dm[":userId"].messages.$post({
+      param: { userId: b.id },
+      json: { body: "first" },
     });
     expect(first.status).toBe(201);
-    const firstBody = (await first.json()) as { conversation: { id: string } };
+    const firstBody = (await first.json()) as { conversationId: string };
 
-    const second = await client.api.conversations.$post({
-      json: { memberIds: [b.id] },
+    const second = await client.api.conversations.dm[":userId"].messages.$post({
+      param: { userId: b.id },
+      json: { body: "second" },
     });
-    expect(second.status).toBe(200);
-    const secondBody = (await second.json()) as { conversation: { id: string } };
-    expect(secondBody.conversation.id).toBe(firstBody.conversation.id);
+    expect(second.status).toBe(201);
+    const secondBody = (await second.json()) as { conversationId: string };
+    expect(secondBody.conversationId).toBe(firstBody.conversationId);
 
     const leaveDm = await client.api.conversations[":id"].leave.$delete({
-      param: { id: firstBody.conversation.id },
+      param: { id: firstBody.conversationId },
     });
     expect(leaveDm.status).toBe(400);
   });
@@ -492,9 +494,12 @@ describe("core api integration (postgres)", () => {
       }
     }
 
-    const created = await client.api.conversations.$post({ json: { memberIds: [b.id] } });
+    const created = await client.api.conversations.dm[":userId"].messages.$post({
+      param: { userId: b.id },
+      json: { body: "seed conversation" },
+    });
     expect(created.status).toBe(201);
-    const convId = ((await created.json()) as { conversation: { id: string } }).conversation.id;
+    const convId = ((await created.json()) as { conversationId: string }).conversationId;
 
     await waitFor(
       () =>
@@ -581,7 +586,7 @@ describe("core api integration (postgres)", () => {
     const read = await client.api.uploads[":key{.+}"].$get({
       param: { "key{.+}": presigned.key },
     } as never);
-    expect(read.status).toBe(302);
+    expect(read.status).toBe(200);
   });
 
   test("group delete cascades conversation members and messages", async () => {

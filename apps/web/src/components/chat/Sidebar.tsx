@@ -54,6 +54,12 @@ import { ProfileDetailsForm, type EditProfileValues } from "./ProfileDetailsForm
 
 type SidebarView = "chats" | "profile" | "edit-profile" | "settings" | "create-group";
 
+function isEditableTarget(target: EventTarget | null): boolean {
+  if (!(target instanceof HTMLElement)) return false;
+  if (target.isContentEditable) return true;
+  return Boolean(target.closest("input, textarea, select, [contenteditable='true']"));
+}
+
 function ProfileSummaryView({
   onBack,
   onEdit,
@@ -309,6 +315,35 @@ export function Sidebar({
     (theme === "system" &&
       typeof window !== "undefined" &&
       window.matchMedia("(prefers-color-scheme: dark)").matches);
+
+  useEffect(() => {
+    const focusSearchInput = () => {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          searchInputRef.current?.focus();
+        });
+      });
+    };
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.repeat) return;
+      if (event.key !== "/") return;
+      if (event.metaKey || event.ctrlKey || event.altKey) return;
+      if (isEditableTarget(event.target)) return;
+
+      event.preventDefault();
+      if (view !== "chats") {
+        setView("chats");
+      }
+      focusSearchInput();
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [view]);
+
   const meQuery = useQuery({
     queryKey: ["me"],
     queryFn: async () => {

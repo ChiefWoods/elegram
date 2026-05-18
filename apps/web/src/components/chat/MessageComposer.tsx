@@ -213,9 +213,13 @@ export function MessageComposer({
           accept={IMAGE_ACCEPT}
           className="hidden"
           onChange={(event) => {
-            const files = event.target.files;
-            event.target.value = "";
-            if (files) prepareSelection(files, "image");
+            const input = event.currentTarget;
+            const files = input.files;
+            try {
+              if (files?.length) prepareSelection(files, "image");
+            } finally {
+              input.value = "";
+            }
           }}
         />
         <input
@@ -225,9 +229,13 @@ export function MessageComposer({
           accept={DOCUMENT_ACCEPT}
           className="hidden"
           onChange={(event) => {
-            const files = event.target.files;
-            event.target.value = "";
-            if (files) prepareSelection(files, "document");
+            const input = event.currentTarget;
+            const files = input.files;
+            try {
+              if (files?.length) prepareSelection(files, "document");
+            } finally {
+              input.value = "";
+            }
           }}
         />
 

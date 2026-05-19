@@ -14,7 +14,8 @@
   "private": true,
   "scripts": {
     "build": "turbo build",
-    "dev": "turbo dev",
+    "dev": "sh -ec 'trap \"bun run --cwd apps/server docker:dev:stop\" EXIT INT TERM; turbo dev --filter=@elegram/server --filter=@elegram/web'",
+    "test": "sh -ec 'trap \"bun run --cwd apps/server docker:test:stop\" EXIT; turbo test --filter=@elegram/server --filter=@elegram/web'",
     "lint": "turbo lint",
     "lint:fix": "turbo lint:fix",
     "format": "turbo format",

@@ -22,12 +22,27 @@
     "typecheck": {
       "dependsOn": ["^typecheck"]
     },
-    "dev": {
-      "cache": false,
-      "persistent": true
+    "docker:dev:up": {
+      "cache": false
     },
-    "test": {
-      "dependsOn": ["^test"]
+    "docker:test:up": {
+      "cache": false
+    },
+    "@elegram/server#dev": {
+      "cache": false,
+      "persistent": true,
+      "dependsOn": ["docker:dev:up"]
+    },
+    "@elegram/web#dev": {
+      "cache": false,
+      "persistent": true,
+      "dependsOn": ["@elegram/server#docker:dev:up"]
+    },
+    "@elegram/server#test": {
+      "dependsOn": ["docker:test:up"]
+    },
+    "@elegram/web#test": {
+      "dependsOn": ["@elegram/server#test"]
     }
   }
 }

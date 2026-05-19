@@ -7,16 +7,28 @@ import { Toaster } from "@workspace/ui/components/sonner";
 import { TooltipProvider } from "@workspace/ui/components/tooltip";
 import { useEffect } from "react";
 
+import favicon from "@/assets/favicon.svg";
 import { ErrorComponent } from "@/components/state/error";
 import { NotFoundComponent } from "@/components/state/not-found";
 
 export const Route = createRootRoute({
   head: () => {
+    const head = {
+      links: [
+        {
+          rel: "icon",
+          type: "image/svg+xml",
+          href: favicon,
+        },
+      ],
+    };
+
     if (!import.meta.env.DEV || import.meta.env.MODE === "test") {
-      return {};
+      return head;
     }
 
     return {
+      ...head,
       scripts: [
         {
           src: "//unpkg.com/react-scan/dist/auto.global.js",

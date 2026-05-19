@@ -20,6 +20,8 @@
     "format": "turbo format",
     "format:check": "turbo format:check",
     "typecheck": "turbo typecheck",
+    "ci:server": "act workflow_dispatch -W .github/workflows/ci-server.yml",
+    "ci:web": "act workflow_dispatch -W .github/workflows/ci-web.yml",
     "prepare": "husky"
   },
   "workspaces": [

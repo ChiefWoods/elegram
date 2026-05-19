@@ -1,0 +1,134 @@
+name: CI Server
+
+on:
+  pull_request:
+    paths:
+      - apps/server/**
+      - package.json
+      - bun.lock
+      - turbo.json
+      - tsconfig.json
+      - .github/workflows/ci-server.yml
+  push:
+    branches:
+      - main
+    paths:
+      - apps/server/**
+      - package.json
+      - bun.lock
+      - turbo.json
+      - tsconfig.json
+      - .github/workflows/ci-server.yml
+  workflow_call:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-server-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_ENV: test
+  DATABASE_URL: postgresql://postgres:postgres@localhost:55432/elegram_test
+  BETTER_AUTH_SECRET: test-secret
+  BETTER_AUTH_URL: http://localhost:3000
+  CORS_ORIGIN: http://localhost:5173
+  S3_ENDPOINT: http://localhost:59000
+  S3_REGION: us-east-1
+  S3_ACCESS_KEY: minioadmin
+  S3_SECRET_KEY: minioadmin
+  S3_BUCKET: elegram-uploads
+  REDIS_URL: redis://localhost:56379
+
+jobs:
+  verify:
+    name: Lint, Format, Prisma, Tests
+    runs-on: ubuntu-24.04
+    services:
+      postgres:
+        image: postgres:18.3-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: elegram_test
+        ports:
+          - 55432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d elegram_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+      redis:
+        image: redis:8.6.3-alpine
+        ports:
+          - 56379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: current
+          check-latest: true
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Lint
+        working-directory: apps/server
+        run: bun run lint
+
+      - name: Format check
+        working-directory: apps/server
+        run: bun run format:check
+
+      - name: Install MinIO tools
+        run: |
+          ARCH="$(uname -m)"
+          if [ "$ARCH" = "aarch64" ] || [ "$ARCH" = "arm64" ]; then
+            BIN_ARCH="linux-arm64"
+          else
+            BIN_ARCH="linux-amd64"
+          fi
+          curl -fsSL "https://dl.min.io/server/minio/release/${BIN_ARCH}/minio" -o /usr/local/bin/minio
+          curl -fsSL "https://dl.min.io/client/mc/release/${BIN_ARCH}/mc" -o /usr/local/bin/mc
+          chmod +x /usr/local/bin/minio
+          chmod +x /usr/local/bin/mc
+
+      - name: Start MinIO and create bucket
+        run: |
+          mkdir -p /tmp/minio-data
+          export MINIO_ROOT_USER=minioadmin
+          export MINIO_ROOT_PASSWORD=minioadmin
+          nohup minio server /tmp/minio-data --address ":59000" --console-address ":59001" >/tmp/minio.log 2>&1 &
+          for i in $(seq 1 30); do
+            if curl -sf "http://localhost:59000/minio/health/live" >/dev/null; then
+              break
+            fi
+            sleep 1
+          done
+          mc alias set local http://localhost:59000 minioadmin minioadmin
+          mc mb local/elegram-uploads --ignore-existing
+
+      - name: Generate Prisma client
+        working-directory: apps/server
+        run: bun run db:generate
+
+      - name: Apply Prisma migrations
+        working-directory: apps/server
+        run: bunx --bun prisma migrate deploy
+
+      - name: Tests
+        working-directory: apps/server
+        run: bun run test

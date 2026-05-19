@@ -1,0 +1,77 @@
+name: CI Web
+
+on:
+  pull_request:
+    paths:
+      - apps/web/**
+      - packages/ui/**
+      - package.json
+      - bun.lock
+      - turbo.json
+      - tsconfig.json
+      - .github/workflows/ci-web.yml
+  push:
+    branches:
+      - main
+    paths:
+      - apps/web/**
+      - packages/ui/**
+      - package.json
+      - bun.lock
+      - turbo.json
+      - tsconfig.json
+      - .github/workflows/ci-web.yml
+  workflow_dispatch:
+
+concurrency:
+  group: ci-web-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  DATABASE_URL: postgresql://postgres:postgres@localhost:55432/elegram_test
+  VITE_SERVER_URL: http://localhost:3000
+
+jobs:
+  verify:
+    name: Lint, Format, Typecheck, Build, DOM
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: current
+          check-latest: true
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Lint
+        working-directory: apps/web
+        run: bun run lint
+
+      - name: Format check
+        working-directory: apps/web
+        run: bun run format:check
+
+      - name: Generate Prisma client
+        working-directory: apps/server
+        run: bun run db:generate
+
+      - name: Typecheck
+        run: bun run typecheck
+
+      - name: Build
+        run: bun run build
+
+      - name: DOM tests
+        working-directory: apps/web
+        run: bun run test:dom

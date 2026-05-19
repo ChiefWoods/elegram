@@ -45,9 +45,13 @@ function RootComponent() {
       </TooltipProvider>
       <Toaster richColors position="bottom-right" closeButton />
       {/* avoid conflicting positions with other devtools */}
-      <TanStackDevtools plugins={[formDevtoolsPlugin()]} config={{ position: "top-right" }} />
-      <TanStackRouterDevtools position="bottom-left" />
-      <ReactQueryDevtools initialIsOpen={false} position="left" />
+      {import.meta.env.DEV && import.meta.env.MODE !== "test" && (
+        <>
+          <TanStackDevtools plugins={[formDevtoolsPlugin()]} config={{ position: "top-right" }} />
+          <TanStackRouterDevtools position="bottom-left" />
+          <ReactQueryDevtools initialIsOpen={false} position="left" />
+        </>
+      )}
     </>
   );
 }

@@ -278,7 +278,7 @@ export function CreateGroupFlow({
                 <button
                   type="button"
                   onClick={() => toggleUser(member.id)}
-                  className="group bg-sidebar-accent/70 hover:bg-destructive/15 hover:text-destructive inline-flex h-8 max-w-56 items-center gap-1.5 rounded-full p-2 text-left transition-colors duration-150 ease-out"
+                  className="group inline-flex h-8 max-w-56 items-center gap-1.5 rounded-full bg-sidebar-accent/70 p-2 text-left transition-colors duration-150 ease-out hover:bg-destructive/15 hover:text-destructive"
                   aria-label={`Remove ${member.name}`}
                 >
                   <span className="relative size-4 shrink-0">
@@ -289,7 +289,7 @@ export function CreateGroupFlow({
                         size="xs"
                       />
                     </span>
-                    <span className="bg-destructive absolute inset-0 grid place-items-center rounded-full opacity-0 transition-opacity duration-150 ease-out group-hover:opacity-100">
+                    <span className="absolute inset-0 grid place-items-center rounded-full bg-destructive opacity-0 transition-opacity duration-150 ease-out group-hover:opacity-100">
                       <X className="size-3 stroke-[2.5] text-white" />
                     </span>
                   </span>

@@ -104,7 +104,7 @@ export function ChangePasswordForm({
               onChange={(e) => field.handleChange(e.target.value)}
             />
             {field.state.meta.isTouched && field.state.meta.errors[0] && (
-              <span className="text-destructive text-xs" role="alert">
+              <span className="text-xs text-destructive" role="alert">
                 {field.state.meta.errors[0]}
               </span>
             )}

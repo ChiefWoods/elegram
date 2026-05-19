@@ -1,7 +1,7 @@
 {
   "name": "@elegram/server",
-  "type": "module",
   "private": true,
+  "type": "module",
   "exports": {
     ".": "./src/app.ts",
     "./limits": "./src/lib/limits.ts"

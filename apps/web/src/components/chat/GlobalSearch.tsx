@@ -95,12 +95,12 @@ export function SearchResults({
             key={c.id}
             type="button"
             onClick={() => onPickConversation?.(c.id)}
-            className="hover:bg-sidebar-accent flex w-full items-center gap-3 px-3 py-2 text-left"
+            className="flex w-full items-center gap-3 px-3 py-2 text-left hover:bg-sidebar-accent"
           >
             <InitialsAvatar name={c.name} imageUrl={c.imageUrl} online={c.online} />
             <div className="min-w-0">
               <div className="truncate text-sm font-semibold">{c.name}</div>
-              <div className="text-muted-foreground truncate text-xs">{c.preview}</div>
+              <div className="truncate text-xs text-muted-foreground">{c.preview}</div>
             </div>
           </button>
         ))}
@@ -116,14 +116,14 @@ export function SearchResults({
             key={u.id}
             type="button"
             onClick={() => onPickUser?.(u)}
-            className="hover:bg-sidebar-accent flex w-full items-center gap-3 px-3 py-2 text-left"
+            className="flex w-full items-center gap-3 px-3 py-2 text-left hover:bg-sidebar-accent"
           >
             <InitialsAvatar name={u.displayUsername ?? u.username ?? "?"} />
             <div className="min-w-0">
               <div className="truncate text-sm font-semibold">
                 {u.displayUsername ?? u.username}
               </div>
-              <div className="text-muted-foreground truncate text-xs">@{u.username}</div>
+              <div className="truncate text-xs text-muted-foreground">@{u.username}</div>
             </div>
           </button>
         ))}
@@ -145,13 +145,13 @@ function Section({
 }) {
   return (
     <div>
-      <div className="text-muted-foreground px-3 py-1.5 text-xs font-semibold">{title}</div>
+      <div className="px-3 py-1.5 text-xs font-semibold text-muted-foreground">{title}</div>
       {loading ? (
         <div className="flex justify-center py-3">
           <Spinner aria-label="Searching" />
         </div>
       ) : empty ? (
-        <div className="text-muted-foreground px-3 py-2 text-xs italic">No results</div>
+        <div className="px-3 py-2 text-xs text-muted-foreground italic">No results</div>
       ) : (
         children
       )}

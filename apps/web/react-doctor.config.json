@@ -1,11 +1,5 @@
 {
   "ignore": {
-    "files": [
-      ".tanstack/**",
-      ".turbo/**",
-      "dist/**",
-      "node_modules/**",
-      "src/routeTree.gen.ts"
-    ]
+    "files": [".tanstack/**", ".turbo/**", "dist/**", "node_modules/**", "src/routeTree.gen.ts"]
   }
 }

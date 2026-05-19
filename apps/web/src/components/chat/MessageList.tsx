@@ -58,7 +58,7 @@ export type MessageListHandle = {
 
 export function DayDivider({ label, onClick }: { label: string; onClick?: () => void }) {
   const pill = (
-    <span className="bg-foreground/40 text-background dark:bg-foreground/30 rounded-full px-2.5 py-0.5 text-[11px] font-medium">
+    <span className="rounded-full bg-foreground/40 px-2.5 py-0.5 text-[11px] font-medium text-background dark:bg-foreground/30">
       {label}
     </span>
   );
@@ -93,20 +93,20 @@ export function IncomingBubble({ message }: { message: Message }) {
       </div>
       <div className="flex max-w-[70%] flex-col">
         <div
-          className={`bg-card text-card-foreground border rounded-2xl px-3 py-2 text-sm shadow-sm ${
+          className={`rounded-2xl border bg-card px-3 py-2 text-sm text-card-foreground shadow-sm ${
             message.isLastInRun ? "rounded-bl-md" : ""
           }`}
         >
           {message.showAuthor && (
-            <div className="text-primary mb-0.5 text-xs font-semibold">{message.authorName}</div>
+            <div className="mb-0.5 text-xs font-semibold text-primary">{message.authorName}</div>
           )}
           <AttachmentPreview message={message} />
           {message.body && (
-            <div className="whitespace-pre-wrap wrap-break-word">{message.body}</div>
+            <div className="wrap-break-word whitespace-pre-wrap">{message.body}</div>
           )}
         </div>
         {message.isLastInRun && (
-          <span className="text-muted-foreground mt-1 ml-1 text-[11px]">
+          <span className="mt-1 ml-1 text-[11px] text-muted-foreground">
             {message.time}
             {message.edited ? " · edited" : ""}
           </span>
@@ -131,15 +131,15 @@ export function OutgoingBubble({
   const bubble = (
     <div className="flex max-w-[70%] flex-col items-end">
       <div
-        className={`bg-primary text-primary-foreground rounded-2xl px-3 py-2 text-sm shadow-sm ${
+        className={`rounded-2xl bg-primary px-3 py-2 text-sm text-primary-foreground shadow-sm ${
           message.isLastInRun ? "rounded-br-md" : ""
         }`}
       >
         <AttachmentPreview message={message} />
-        {message.body && <div className="whitespace-pre-wrap wrap-break-word">{message.body}</div>}
+        {message.body && <div className="wrap-break-word whitespace-pre-wrap">{message.body}</div>}
       </div>
       {message.isLastInRun && (
-        <span className="text-muted-foreground mt-1 mr-1 inline-flex items-center gap-1 text-[11px]">
+        <span className="mt-1 mr-1 inline-flex items-center gap-1 text-[11px] text-muted-foreground">
           {message.edited ? "edited · " : ""}
           {message.time}
           <CheckCheck
@@ -206,13 +206,13 @@ function AttachmentPreview({ message }: { message: Message }) {
           toast.error("Failed to download attachment.");
         });
       }}
-      className="bg-background/60 hover:bg-background/70 mb-1 flex w-full cursor-pointer items-center gap-2 rounded-lg p-2 text-left"
+      className="mb-1 flex w-full cursor-pointer items-center gap-2 rounded-lg bg-background/60 p-2 text-left hover:bg-background/70"
     >
       <FileText className="size-4 shrink-0" />
       <div className="min-w-0">
         <div className="line-clamp-1 text-xs font-medium">{documentFilename(message)}</div>
         {attachmentSize && (
-          <div className="text-muted-foreground text-[11px]">{attachmentSize}</div>
+          <div className="text-[11px] text-muted-foreground">{attachmentSize}</div>
         )}
       </div>
     </button>
@@ -235,7 +235,7 @@ function TombstoneRow({
           {showAvatar && avatarName && <InitialsAvatar name={avatarName} size="sm" />}
         </div>
       )}
-      <div className="text-muted-foreground border-muted-foreground/30 rounded-2xl border border-dashed px-3 py-1.5 text-xs italic">
+      <div className="rounded-2xl border border-dashed border-muted-foreground/30 px-3 py-1.5 text-xs text-muted-foreground italic">
         Message deleted
       </div>
     </div>
@@ -254,25 +254,25 @@ export function InlineEditor({
   const [value, setValue] = useState(initial);
   return (
     <div className="flex justify-end">
-      <div className="bg-card flex max-w-[70%] flex-col gap-2 rounded-2xl border p-2 shadow-sm">
+      <div className="flex max-w-[70%] flex-col gap-2 rounded-2xl border bg-card p-2 shadow-sm">
         <textarea
           autoFocus
           value={value}
           onChange={(e) => setValue(e.target.value)}
-          className="bg-background min-h-16 w-full resize-y rounded-md border px-2 py-1.5 text-sm outline-none"
+          className="min-h-16 w-full resize-y rounded-md border bg-background px-2 py-1.5 text-sm outline-none"
         />
         <div className="flex justify-end gap-2 text-xs">
           <button
             type="button"
             onClick={onCancel}
-            className="text-muted-foreground hover:text-foreground rounded-md px-2 py-1"
+            className="rounded-md px-2 py-1 text-muted-foreground hover:text-foreground"
           >
             Cancel
           </button>
           <button
             type="button"
             onClick={() => onSave(value)}
-            className="bg-primary text-primary-foreground rounded-md px-2 py-1"
+            className="rounded-md bg-primary px-2 py-1 text-primary-foreground"
           >
             Save
           </button>
@@ -413,7 +413,7 @@ export function MessageList({
   }));
 
   return (
-    <div className="bg-background relative flex flex-1 min-h-0">
+    <div className="relative flex min-h-0 flex-1 bg-background">
       <div
         ref={scrollRef}
         onScroll={handleScroll}
@@ -422,9 +422,9 @@ export function MessageList({
       >
         {items.length === 0 && (
           <div className="flex h-full items-center justify-center">
-            <div className="bg-primary/10 rounded-2xl px-6 py-4 text-center backdrop-blur-sm">
-              <div className="text-foreground text-base font-semibold">No messages here yet</div>
-              <div className="text-muted-foreground mt-1 text-sm">Say hello!</div>
+            <div className="rounded-2xl bg-primary/10 px-6 py-4 text-center backdrop-blur-sm">
+              <div className="text-base font-semibold text-foreground">No messages here yet</div>
+              <div className="mt-1 text-sm text-muted-foreground">Say hello!</div>
             </div>
           </div>
         )}
@@ -491,7 +491,7 @@ export function MessageList({
         aria-label="Scroll to latest"
         aria-hidden={!showFab}
         tabIndex={showFab ? 0 : -1}
-        className={`bg-card text-foreground absolute right-4 bottom-20 grid size-10 place-items-center rounded-full border shadow-md transition-opacity duration-200 ${
+        className={`absolute right-4 bottom-20 grid size-10 place-items-center rounded-full border bg-card text-foreground shadow-md transition-opacity duration-200 ${
           showFab ? "opacity-100" : "pointer-events-none opacity-0"
         }`}
       >

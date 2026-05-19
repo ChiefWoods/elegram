@@ -67,7 +67,7 @@ export function ProfileDetailsForm({
         {(field) => (
           <AuthField label="Bio (optional)">
             <textarea
-              className="border-input bg-background focus-visible:ring-ring/40 min-h-20 w-full resize-y rounded-md border px-3 py-2 text-sm outline-none focus-visible:ring-2"
+              className="min-h-20 w-full resize-y rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
               value={field.state.value}
               onBlur={field.handleBlur}
               onChange={(e) => field.handleChange(e.target.value)}
@@ -82,7 +82,7 @@ export function ProfileDetailsForm({
           disabled
           readOnly
           tabIndex={-1}
-          className="bg-muted/60 pointer-events-none select-none"
+          className="pointer-events-none bg-muted/60 select-none"
         />
       </AuthField>
       <form.Subscribe

@@ -207,7 +207,7 @@ export function GroupInfoPanel({
       <div className="relative flex flex-col items-center gap-2 px-6 py-6">
         <InitialsAvatar name={title} imageUrl={avatarKey && uploadUrl(avatarKey)} size="xl" />
         <p className="mt-2 text-center text-lg font-semibold">{title}</p>
-        <p className="text-muted-foreground text-xs">{memberCountLabel}</p>
+        <p className="text-xs text-muted-foreground">{memberCountLabel}</p>
       </div>
 
       <ul className="space-y-4 px-6 py-7">
@@ -216,12 +216,12 @@ export function GroupInfoPanel({
 
       <div className="border-t px-4 py-4">
         <div className="mb-2 flex items-center justify-between px-2">
-          <p className="text-muted-foreground text-xs font-semibold">{memberCountLabel}</p>
+          <p className="text-xs font-semibold text-muted-foreground">{memberCountLabel}</p>
           {isAdmin && (
             <button
               type="button"
               onClick={() => setAddOpen(true)}
-              className="text-primary text-xs font-medium hover:underline"
+              className="text-xs font-medium text-primary hover:underline"
             >
               + Add
             </button>
@@ -249,7 +249,7 @@ export function GroupInfoPanel({
           <button
             type="button"
             onClick={() => setDeleteOpen(true)}
-            className="text-destructive hover:bg-destructive/10 h-9 w-full rounded-md px-4 text-sm font-medium"
+            className="h-9 w-full rounded-md px-4 text-sm font-medium text-destructive hover:bg-destructive/10"
           >
             Delete group
           </button>
@@ -330,7 +330,7 @@ function MemberRow({
     !isSelf && callerIsAdmin && !isTargetOwner && (callerIsOwner || member.role === "MEMBER");
 
   return (
-    <li className="hover:bg-muted/60 flex items-center gap-3 rounded-md px-2 py-2">
+    <li className="flex items-center gap-3 rounded-md px-2 py-2 hover:bg-muted/60">
       <InitialsAvatar
         name={member.name}
         imageUrl={member.avatarKey ? uploadUrl(member.avatarKey) : null}
@@ -338,7 +338,7 @@ function MemberRow({
       />
       <div className="min-w-0 flex-1">
         <div className="truncate text-sm font-medium">{member.name}</div>
-        <div className="text-muted-foreground truncate text-xs">{member.status}</div>
+        <div className="truncate text-xs text-muted-foreground">{member.status}</div>
       </div>
       {member.role !== "MEMBER" && <RoleBadge role={member.role} />}
       {showMenu && (
@@ -348,7 +348,7 @@ function MemberRow({
               type="button"
               aria-label={`Actions for ${member.name}`}
               disabled={actionsDisabled}
-              className="hover:bg-muted text-muted-foreground grid size-7 place-items-center rounded-full disabled:opacity-50"
+              className="grid size-7 place-items-center rounded-full text-muted-foreground hover:bg-muted disabled:opacity-50"
             >
               <svg viewBox="0 0 24 24" className="size-4" fill="currentColor">
                 <circle cx="5" cy="12" r="1.6" />
@@ -427,7 +427,7 @@ function LeaveButton({
       type="button"
       disabled={isLeaving}
       onClick={onLeaveRequest}
-      className="text-destructive hover:bg-destructive/10 h-9 w-full rounded-md px-4 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:bg-transparent"
+      className="h-9 w-full rounded-md px-4 text-sm font-medium text-destructive hover:bg-destructive/10 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:bg-transparent"
     >
       {isLeaving ? "Leaving..." : "Leave group"}
     </button>

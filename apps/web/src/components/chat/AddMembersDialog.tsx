@@ -132,7 +132,7 @@ export function AddMembersDialog({
         <button
           type="button"
           onClick={() => toggleUser(user.id, user)}
-          className={`hover:bg-muted flex w-full items-center gap-3 rounded-md px-2 py-2 text-left ${
+          className={`flex w-full items-center gap-3 rounded-md px-2 py-2 text-left hover:bg-muted ${
             checked ? "bg-muted" : ""
           }`}
         >
@@ -150,7 +150,7 @@ export function AddMembersDialog({
           />
           <div className="min-w-0">
             <p className="truncate text-sm font-medium">{name}</p>
-            <p className="text-muted-foreground truncate text-xs">@{user.username}</p>
+            <p className="truncate text-xs text-muted-foreground">@{user.username}</p>
           </div>
         </button>
       </li>
@@ -172,7 +172,7 @@ export function AddMembersDialog({
                   <button
                     type="button"
                     onClick={() => toggleUser(user.id)}
-                    className="group bg-muted hover:bg-destructive/15 hover:text-destructive inline-flex h-8 max-w-56 items-center gap-1.5 rounded-full px-2.5 text-left transition-colors duration-150 ease-out"
+                    className="group inline-flex h-8 max-w-56 items-center gap-1.5 rounded-full bg-muted px-2.5 text-left transition-colors duration-150 ease-out hover:bg-destructive/15 hover:text-destructive"
                     aria-label={`Remove ${name}`}
                   >
                     <span className="relative size-4 shrink-0">
@@ -183,7 +183,7 @@ export function AddMembersDialog({
                           size="xs"
                         />
                       </span>
-                      <span className="bg-destructive absolute inset-0 grid place-items-center rounded-full opacity-0 transition-opacity duration-150 ease-out group-hover:opacity-100">
+                      <span className="absolute inset-0 grid place-items-center rounded-full bg-destructive opacity-0 transition-opacity duration-150 ease-out group-hover:opacity-100">
                         <X className="size-3 stroke-[2.5] text-white" />
                       </span>
                     </span>
@@ -198,12 +198,12 @@ export function AddMembersDialog({
           value={q}
           onChange={(event) => setQ(event.target.value)}
           placeholder="Search users"
-          className="border-input bg-background h-10 w-full rounded-md border px-3 text-sm outline-none"
+          className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm outline-none"
         />
         <ul className="max-h-72 overflow-y-auto">
           {debouncedQ.length === 0 ? (
             recentEligibleUsers.length === 0 ? (
-              <li className="text-muted-foreground px-2 py-3 text-sm italic">
+              <li className="px-2 py-3 text-sm text-muted-foreground italic">
                 Search users to add.
               </li>
             ) : (
@@ -214,7 +214,7 @@ export function AddMembersDialog({
               <Spinner aria-label="Searching users" />
             </li>
           ) : users.length === 0 ? (
-            <li className="text-muted-foreground px-2 py-3 text-sm italic">
+            <li className="px-2 py-3 text-sm text-muted-foreground italic">
               No eligible users found.
             </li>
           ) : (

@@ -49,7 +49,7 @@ export function InitialsAvatar({
     <ShadcnAvatar className={sizeClass[size]}>
       {imageUrl && <AvatarImage src={imageUrl} alt={name} />}
       <AvatarFallback
-        className={`${color} font-semibold text-${sizeClass[size]} text-white`}
+        className={`${color} text- font-semibold${sizeClass[size]} text-white`}
         delayMs={500}
       >
         {initial}

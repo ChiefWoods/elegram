@@ -11,9 +11,9 @@ export function AuthField({
 }) {
   return (
     <label className="flex flex-col gap-1.5">
-      <span className="text-muted-foreground text-xs font-medium">{label}</span>
+      <span className="text-xs font-medium text-muted-foreground">{label}</span>
       {children}
-      {hint && <span className="text-muted-foreground text-xs">{hint}</span>}
+      {hint && <span className="text-xs text-muted-foreground">{hint}</span>}
     </label>
   );
 }

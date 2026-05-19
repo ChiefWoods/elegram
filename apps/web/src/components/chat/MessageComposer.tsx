@@ -190,7 +190,7 @@ export function MessageComposer({
 
   return (
     <div className="p-3">
-      <div className="bg-card flex items-center gap-2 rounded-full border px-2 py-1.5 shadow-sm">
+      <div className="flex items-center gap-2 rounded-full border bg-card px-2 py-1.5 shadow-sm">
         <textarea
           value={value}
           onChange={(e) => setValue(e.target.value)}
@@ -203,7 +203,7 @@ export function MessageComposer({
             }
           }}
           placeholder="Message"
-          className="placeholder:text-muted-foreground flex-1 resize-none overflow-y-auto bg-transparent px-2 text-sm outline-none"
+          className="flex-1 resize-none overflow-y-auto bg-transparent px-2 text-sm outline-none placeholder:text-muted-foreground"
         />
 
         <input
@@ -246,7 +246,7 @@ export function MessageComposer({
               aria-label="Attach file"
               aria-busy={sendAttachments.isPending}
               disabled={sendAttachments.isPending}
-              className="hover:bg-muted text-muted-foreground grid size-9 place-items-center rounded-full disabled:opacity-60"
+              className="grid size-9 place-items-center rounded-full text-muted-foreground hover:bg-muted disabled:opacity-60"
             >
               {sendAttachments.isPending ? (
                 <Spinner aria-label="Uploading attachment" />
@@ -277,7 +277,7 @@ export function MessageComposer({
           type="button"
           onClick={submit}
           aria-label="Send"
-          className="bg-primary text-primary-foreground grid size-9 place-items-center rounded-full"
+          className="grid size-9 place-items-center rounded-full bg-primary text-primary-foreground"
         >
           <SendHorizontal className="size-4" />
         </button>
@@ -313,7 +313,7 @@ export function MessageComposer({
               <div
                 key={item.id}
                 className={cn(
-                  "bg-muted/40 rounded-lg border p-2",
+                  "rounded-lg border bg-muted/40 p-2",
                   pendingAttachments.length === 1 && "w-fit",
                 )}
               >
@@ -324,11 +324,11 @@ export function MessageComposer({
                     className="mx-auto size-28 rounded-md object-cover"
                   />
                 ) : (
-                  <div className="bg-background text-muted-foreground mx-auto grid size-28 place-items-center rounded-md border">
+                  <div className="mx-auto grid size-28 place-items-center rounded-md border bg-background text-muted-foreground">
                     <FileText className="size-8" />
                   </div>
                 )}
-                <p className="mt-2 w-28 line-clamp-2 text-center text-xs">{item.file.name}</p>
+                <p className="mt-2 line-clamp-2 w-28 text-center text-xs">{item.file.name}</p>
               </div>
             ))}
           </div>
@@ -344,7 +344,7 @@ export function MessageComposer({
                     ? "Add a caption (sent with first attachment)"
                     : "Add a caption"
                 }
-                className="bg-muted/30 placeholder:text-muted-foreground h-9 min-w-0 flex-1 rounded-md border px-3 text-sm outline-none"
+                className="h-9 min-w-0 flex-1 rounded-md border bg-muted/30 px-3 text-sm outline-none placeholder:text-muted-foreground"
                 disabled={sendAttachments.isPending}
               />
               <div className="flex shrink-0 gap-2">

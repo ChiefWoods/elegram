@@ -65,12 +65,12 @@ export function PasskeysSection() {
   return (
     <div className="mt-6 space-y-3 border-t pt-6">
       <div className="flex items-start gap-3">
-        <div className="bg-muted text-muted-foreground grid size-9 shrink-0 place-items-center rounded-md">
+        <div className="grid size-9 shrink-0 place-items-center rounded-md bg-muted text-muted-foreground">
           <KeyRound className="size-4" />
         </div>
         <div className="flex-1">
           <h3 className="text-sm font-semibold">Passkeys</h3>
-          <p className="text-muted-foreground mt-0.5 text-xs">
+          <p className="mt-0.5 text-xs text-muted-foreground">
             Sign in without a password using your device&apos;s biometrics or security key.
           </p>
         </div>
@@ -78,12 +78,12 @@ export function PasskeysSection() {
 
       <ul className="space-y-2" aria-label="Your passkeys">
         {isPending ? (
-          <li className="text-muted-foreground flex items-center gap-2 text-xs">
+          <li className="flex items-center gap-2 text-xs text-muted-foreground">
             <Spinner aria-label="Loading passkeys" />
             Loading passkeys…
           </li>
         ) : !passkeys || passkeys.length === 0 ? (
-          <li className="text-muted-foreground text-xs">No passkeys added.</li>
+          <li className="text-xs text-muted-foreground">No passkeys added.</li>
         ) : (
           passkeys.map((pk) => {
             const label = pk.name?.trim() ? pk.name : "Unnamed passkey";
@@ -92,12 +92,12 @@ export function PasskeysSection() {
             return (
               <li
                 key={pk.id}
-                className="bg-muted/40 flex items-center gap-3 rounded-md border px-3 py-2"
+                className="flex items-center gap-3 rounded-md border bg-muted/40 px-3 py-2"
               >
-                <KeyRound className="text-muted-foreground size-4 shrink-0" />
+                <KeyRound className="size-4 shrink-0 text-muted-foreground" />
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-medium">{label}</p>
-                  {created && <p className="text-muted-foreground text-xs">Added {created}</p>}
+                  {created && <p className="text-xs text-muted-foreground">Added {created}</p>}
                 </div>
                 <button
                   type="button"
@@ -105,7 +105,7 @@ export function PasskeysSection() {
                   aria-busy={isDeleting}
                   disabled={isDeleting || deletingId !== null}
                   onClick={() => setConfirmTarget({ id: pk.id, label })}
-                  className="text-muted-foreground hover:text-destructive grid size-8 shrink-0 place-items-center rounded-md disabled:opacity-60"
+                  className="grid size-8 shrink-0 place-items-center rounded-md text-muted-foreground hover:text-destructive disabled:opacity-60"
                 >
                   {isDeleting ? (
                     <Spinner aria-label="Deleting passkey" />

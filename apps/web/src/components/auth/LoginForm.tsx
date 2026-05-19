@@ -168,7 +168,7 @@ export function LoginForm({ onSwitch }: { onSwitch: () => void }) {
           />
 
           {formError && (
-            <p className="text-destructive text-xs" role="alert">
+            <p className="text-xs text-destructive" role="alert">
               {formError}
             </p>
           )}

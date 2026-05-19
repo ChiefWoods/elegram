@@ -86,13 +86,13 @@ function DeleteGroupDialogForm({
         </DialogDescription>
       </DialogHeader>
       <label className="flex flex-col gap-1.5">
-        <span className="text-muted-foreground text-xs">
+        <span className="text-xs text-muted-foreground">
           Type <strong>{groupTitle}</strong> to confirm.
         </span>
         <input
           value={confirm}
           onChange={(event) => setConfirm(event.target.value)}
-          className="border-input bg-background h-10 w-full rounded-md border px-3 text-sm outline-none"
+          className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm outline-none"
         />
       </label>
       <DialogFooter>

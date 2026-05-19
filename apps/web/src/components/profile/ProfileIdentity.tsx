@@ -16,7 +16,7 @@ export function ProfileIdentity({
       <InitialsAvatar name={name} imageUrl={imageUrl} size="xl" />
       <div className="text-center">
         <div className="text-xl font-semibold">{displayName}</div>
-        <div className="text-muted-foreground text-sm">{status}</div>
+        <div className="text-sm text-muted-foreground">{status}</div>
       </div>
     </div>
   );

@@ -11,7 +11,7 @@ export function HeaderIconButton({
     <button
       type={type}
       className={cn(
-        "text-muted-foreground hover:text-foreground grid size-9 place-items-center rounded-md",
+        "grid size-9 place-items-center rounded-md text-muted-foreground hover:text-foreground",
         className,
       )}
       {...props}

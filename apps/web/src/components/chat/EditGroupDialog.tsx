@@ -159,7 +159,7 @@ function EditGroupDialogForm({
           >
             <InitialsAvatar name={trimmedTitle || "?"} imageUrl={displayAvatarUrl} size="xl" />
             {!displayAvatarUrl && (
-              <span className="bg-primary text-primary-foreground border-background absolute right-0 bottom-1 grid size-8 place-items-center rounded-full border-2">
+              <span className="absolute right-0 bottom-1 grid size-8 place-items-center rounded-full border-2 border-background bg-primary text-primary-foreground">
                 <Camera className="size-4" />
               </span>
             )}
@@ -195,26 +195,26 @@ function EditGroupDialogForm({
       </div>
       <div className="mt-4 flex flex-col gap-3">
         <label className="flex flex-col gap-1.5">
-          <span className="text-muted-foreground text-xs font-medium">Name</span>
+          <span className="text-xs font-medium text-muted-foreground">Name</span>
           <input
             value={title}
             onChange={(event) => setTitle(event.target.value)}
             maxLength={LIMITS.conversation.title.max}
-            className="border-input bg-background h-10 w-full rounded-md border px-3 text-sm outline-none"
+            className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm outline-none"
           />
-          <span className="text-muted-foreground text-right text-[11px]">
+          <span className="text-right text-[11px] text-muted-foreground">
             {title.length}/{LIMITS.conversation.title.max}
           </span>
         </label>
         <label className="flex flex-col gap-1.5">
-          <span className="text-muted-foreground text-xs font-medium">Description</span>
+          <span className="text-xs font-medium text-muted-foreground">Description</span>
           <textarea
             value={description}
             onChange={(event) => setDescription(event.target.value)}
             maxLength={LIMITS.conversation.description.max}
-            className="border-input bg-background min-h-20 w-full resize-y rounded-md border px-3 py-2 text-sm outline-none"
+            className="min-h-20 w-full resize-y rounded-md border border-input bg-background px-3 py-2 text-sm outline-none"
           />
-          <span className="text-muted-foreground text-right text-[11px]">
+          <span className="text-right text-[11px] text-muted-foreground">
             {description.length}/{LIMITS.conversation.description.max}
           </span>
         </label>

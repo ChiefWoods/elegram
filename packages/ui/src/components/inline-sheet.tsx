@@ -1,6 +1,6 @@
-import * as React from "react"
+import * as React from "react";
 
-import { cn } from "@workspace/ui/lib/utils"
+import { cn } from "@workspace/ui/lib/utils";
 
 function InlineSheet({
   open,
@@ -11,10 +11,10 @@ function InlineSheet({
   style,
   ...props
 }: Omit<React.ComponentProps<"div">, "children"> & {
-  open: boolean
-  side?: "left" | "right"
-  width?: string
-  children?: React.ReactNode
+  open: boolean;
+  side?: "left" | "right";
+  width?: string;
+  children?: React.ReactNode;
 }) {
   return (
     <div
@@ -27,16 +27,16 @@ function InlineSheet({
       <div
         style={{ width }}
         className={cn(
-          "bg-popover text-popover-foreground flex h-full flex-col text-sm",
+          "flex h-full flex-col bg-popover text-sm text-popover-foreground",
           side === "right" ? "border-l" : "border-r",
-          className
+          className,
         )}
         {...props}
       >
         {children}
       </div>
     </div>
-  )
+  );
 }
 
-export { InlineSheet }
+export { InlineSheet };

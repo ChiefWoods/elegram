@@ -4,7 +4,7 @@ export function TextInput(props: ComponentProps<"input">) {
   return (
     <input
       {...props}
-      className={`border-input bg-background focus-visible:ring-ring/40 h-10 w-full rounded-md border px-3 text-sm outline-none focus-visible:ring-2 ${props.className ?? ""}`}
+      className={`h-10 w-full rounded-md border border-input bg-background px-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring/40 ${props.className ?? ""}`}
     />
   );
 }

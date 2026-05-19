@@ -70,7 +70,7 @@ export function ChatHeader({
           onToggleInfo?.();
         }
       }}
-      className="bg-muted flex h-14 shrink-0 cursor-pointer items-center gap-3 border-b px-4"
+      className="flex h-14 shrink-0 cursor-pointer items-center gap-3 border-b bg-muted px-4"
     >
       <InitialsAvatar name={name} imageUrl={imageUrl} size="sm" />
       {searchMode ? (
@@ -110,7 +110,7 @@ export function ChatHeader({
               setDateOpen(true);
             }}
             aria-label="Jump to date"
-            className="text-muted-foreground hover:text-foreground grid size-9 place-items-center rounded-md"
+            className="grid size-9 place-items-center rounded-md text-muted-foreground hover:text-foreground"
           >
             <CalendarIcon className="size-5" />
           </button>
@@ -118,8 +118,8 @@ export function ChatHeader({
       ) : (
         <>
           <div className="min-w-0 flex-1">
-            <div className="truncate text-sm font-semibold text-start">{name}</div>
-            <div className="text-muted-foreground truncate text-xs text-start">{subtitle}</div>
+            <div className="truncate text-start text-sm font-semibold">{name}</div>
+            <div className="truncate text-start text-xs text-muted-foreground">{subtitle}</div>
           </div>
           <button
             type="button"
@@ -128,7 +128,7 @@ export function ChatHeader({
               e.stopPropagation();
               setSearchMode(true);
             }}
-            className="text-muted-foreground hover:text-foreground grid size-9 place-items-center rounded-md"
+            className="grid size-9 place-items-center rounded-md text-muted-foreground hover:text-foreground"
           >
             <Search className="size-5" />
           </button>

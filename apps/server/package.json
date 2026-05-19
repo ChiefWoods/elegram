@@ -11,6 +11,10 @@
     "test": "concurrently \"bun run test:unit\" \"bun run test:integration\"",
     "test:unit": "bun test --isolate --preload ./test/setup.ts test/unit",
     "test:integration": "bun test test/integration",
+    "lint": "oxlint --no-error-on-unmatched-pattern",
+    "lint:fix": "oxlint --fix --no-error-on-unmatched-pattern",
+    "format": "oxfmt --no-error-on-unmatched-pattern",
+    "format:check": "oxfmt --check --no-error-on-unmatched-pattern",
     "db:migrate:dev": "bunx --bun prisma migrate dev",
     "db:migrate:deploy": "bunx --bun prisma migrate deploy",
     "db:generate": "bunx --bun prisma generate",
@@ -41,6 +45,8 @@
     "@types/bun": "latest",
     "@types/pg": "^8.20.0",
     "concurrently": "^9.2.1",
+    "oxfmt": "^0.50.0",
+    "oxlint": "^1.65.0",
     "prisma": "^7.8.0"
   }
 }

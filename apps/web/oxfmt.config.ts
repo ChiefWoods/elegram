@@ -2,10 +2,13 @@ import { defineConfig } from "oxfmt";
 
 export default defineConfig({
   ignorePatterns: [
-    "node_modules/**",
+    ".tanstack/**",
     ".turbo/**",
-    "packages/ui/**",
-    "apps/web/src/routeTree.gen.ts",
+    "dist/**",
+    "node_modules/**",
+    "playwright-report/**",
+    "test-results/**",
+    "src/routeTree.gen.ts",
   ],
   sortImports: {
     groups: [
@@ -20,7 +23,7 @@ export default defineConfig({
   },
   overrides: [
     {
-      files: ["apps/web/src/**/*.{js,jsx,ts,tsx,md,mdx,html}"],
+      files: ["**/*.{js,jsx,ts,tsx,md,mdx,html}"],
       options: {
         sortTailwindcss: {
           stylesheet: "../../packages/ui/src/styles/globals.css",

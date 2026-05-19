@@ -15,4 +15,4 @@ COPY --from=build /app /app
 
 WORKDIR /app/apps/server
 EXPOSE 3000
-CMD ["sh", "-c", "bun run db:migrate:deploy && bun run src/index.ts"]
+CMD ["sh", "-c", "bun run db:migrate:deploy && bun run start"]

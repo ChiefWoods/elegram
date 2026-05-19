@@ -26,6 +26,8 @@ test("user can send image attachment with caption", async ({ page }) => {
   await page.getByPlaceholder("Add a caption").fill(caption);
   await page.getByRole("button", { name: "Send" }).click();
 
-  await expect(page.getByText(caption)).toBeVisible({ timeout: 30_000 });
-  await expect(page.locator('img[alt="Attachment"]').first()).toHaveCount(1, { timeout: 30_000 });
+  await expect(
+    page.locator("div.whitespace-pre-wrap.wrap-break-word", { hasText: caption }).last(),
+  ).toBeVisible({ timeout: 30_000 });
+  await expect(page.locator('img[alt="Attachment"]').first()).toBeVisible({ timeout: 30_000 });
 });

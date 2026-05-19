@@ -11,6 +11,20 @@ import { ErrorComponent } from "@/components/state/error";
 import { NotFoundComponent } from "@/components/state/not-found";
 
 export const Route = createRootRoute({
+  head: () => {
+    if (!import.meta.env.DEV || import.meta.env.MODE === "test") {
+      return {};
+    }
+
+    return {
+      scripts: [
+        {
+          src: "//unpkg.com/react-scan/dist/auto.global.js",
+          crossOrigin: "anonymous",
+        },
+      ],
+    };
+  },
   component: RootComponent,
   notFoundComponent: NotFoundComponent,
   errorComponent: ErrorComponent,

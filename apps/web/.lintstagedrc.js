@@ -3,5 +3,5 @@ export default {
     `oxlint --fix --no-error-on-unmatched-pattern ${files.join(" ")}`,
     `oxfmt --no-error-on-unmatched-pattern ${files.join(" ")}`,
   ],
-  "*.{ts,tsx}": "bun run doctor",
+  "*.{ts,tsx}": () => ["bun run doctor --staged"],
 };

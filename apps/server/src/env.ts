@@ -18,6 +18,15 @@ const EnvSchema = z.object({
     .transform((v) => (v ? v : undefined))
     .pipe(z.url().optional()),
   REDIS_URL: z.string().min(1),
+  EMAIL_TRANSPORT: z.enum(["console", "resend"]).default("console"),
+  RESEND_API_KEY: z
+    .string()
+    .optional()
+    .transform((v) => (v ? v : undefined)),
+  EMAIL_FROM: z
+    .string()
+    .optional()
+    .transform((v) => (v ? v : undefined)),
 });
 
 const parsed = EnvSchema.safeParse(process.env);

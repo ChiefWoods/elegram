@@ -3,6 +3,12 @@ WORKDIR /app
 COPY . .
 RUN bun install --frozen-lockfile
 
+# Generate Prisma client for server
+WORKDIR /app/apps/server
+# Prisma generate only needs a syntactically valid URL at build time.
+ENV DATABASE_URL=postgresql://postgres:postgres@localhost:5432/elegram
+RUN bun run db:generate
+
 WORKDIR /app/apps/web
 ARG VITE_SERVER_URL=
 ENV VITE_SERVER_URL=${VITE_SERVER_URL}

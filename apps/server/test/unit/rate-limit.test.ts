@@ -1,7 +1,12 @@
 import { describe, expect, test } from "bun:test";
 import { Hono } from "hono";
 
-import { createRateLimiter, rateLimit, type RedisLike } from "../../src/lib/rate-limit";
+import {
+  createRateLimiter,
+  rateLimit,
+  resetPasswordEmailRateLimitKey,
+  type RedisLike,
+} from "../../src/lib/rate-limit";
 
 function fakeRedis(): RedisLike {
   const store = new Map<string, { tokens: number; ts: number }>();
@@ -147,5 +152,27 @@ describe("rateLimit middleware", () => {
 
     const r = await app.request("/");
     expect(r.status).toBe(401);
+  });
+
+  test("can skip requests when keyFn yields no key", async () => {
+    const limiter = createRateLimiter({ capacity: 5, windowMs: 60_000, client: fakeRedis() });
+    const app = new Hono();
+    app.use(
+      "*",
+      rateLimit(limiter, () => undefined, { onMissingKey: "skip" }),
+    );
+    app.get("/", (c) => c.text("ok"));
+
+    const r = await app.request("/");
+    expect(r.status).toBe(200);
+  });
+});
+
+describe("resetPasswordEmailRateLimitKey", () => {
+  test("normalizes case and whitespace before hashing", () => {
+    const a = resetPasswordEmailRateLimitKey(" User@Example.com ");
+    const b = resetPasswordEmailRateLimitKey("user@example.com");
+    expect(a).toBe(b);
+    expect(a).toHaveLength(64);
   });
 });

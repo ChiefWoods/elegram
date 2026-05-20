@@ -14,6 +14,8 @@ export const {
   signIn,
   signUp,
   passkey,
+  requestPasswordReset,
+  resetPassword,
   updateUser,
   signOut,
   useSession,

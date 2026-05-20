@@ -1,14 +1,44 @@
 import { describe, expect, test, vi } from "bun:test";
 
-import authRouter from "../../src/routes/auth";
 import { authedClient } from "../helpers";
 
 const prisma = { user: { findFirst: vi.fn() } };
+const authHandler = vi.fn(async () => new Response(null, { status: 404 }));
+const limiterConsume = vi.fn(async () => ({ allowed: true as const }));
 
 vi.mock("../../src/lib/prisma", () => ({ prisma }));
 vi.mock("../../src/lib/auth", () => ({
-  auth: { handler: vi.fn(async () => new Response(null, { status: 404 })) },
+  auth: { handler: authHandler },
 }));
+vi.mock("../../src/lib/rate-limit", () => ({
+  resetPasswordEmailRateLimitKey: (email: string) => `hash:${email}`,
+  resetPasswordRateLimiter: { consume: limiterConsume },
+  rateLimit:
+    (
+      limiter: {
+        consume: (
+          key: string,
+        ) => Promise<{ allowed: true } | { allowed: false; retryAfterMs: number }>;
+      },
+      keyFn: (c: { req: { raw: Request } }) => string | undefined | Promise<string | undefined>,
+      options?: { onMissingKey?: "unauthorized" | "skip" },
+    ) =>
+    async (
+      c: { req: { raw: Request }; json: (body: unknown, status: number) => Response },
+      next: () => Promise<Response>,
+    ) => {
+      const key = await keyFn(c);
+      if (!key) {
+        if (options?.onMissingKey === "skip") return next();
+        return c.json({ error: "Unauthorized" }, 401);
+      }
+      const result = await limiter.consume(key);
+      if (result.allowed) return next();
+      return c.json({ error: "Too Many Requests" }, 429);
+    },
+}));
+
+const { default: authRouter } = await import("../../src/routes/auth");
 
 describe("GET /api/auth/validate-email", () => {
   test("400 when email is missing", async () => {
@@ -76,5 +106,37 @@ describe("GET /api/auth/email-exists", () => {
       where: { email: { equals: "real@example.com", mode: "insensitive" } },
       select: { id: true },
     });
+  });
+});
+
+describe("POST /api/auth/request-password-reset", () => {
+  test("applies per-email limiter and forwards to auth handler", async () => {
+    authHandler.mockClear();
+    limiterConsume.mockClear();
+
+    const res = await authRouter.request("/request-password-reset", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: "test@example.com" }),
+    });
+
+    expect(res.status).toBe(404);
+    expect(limiterConsume).toHaveBeenCalledWith("hash:test@example.com");
+    expect(authHandler).toHaveBeenCalledTimes(1);
+  });
+
+  test("skips limiter when body is invalid and still forwards to auth handler", async () => {
+    authHandler.mockClear();
+    limiterConsume.mockClear();
+
+    const res = await authRouter.request("/request-password-reset", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: "invalid" }),
+    });
+
+    expect(res.status).toBe(404);
+    expect(limiterConsume).not.toHaveBeenCalled();
+    expect(authHandler).toHaveBeenCalledTimes(1);
   });
 });

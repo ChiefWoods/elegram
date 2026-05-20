@@ -4,6 +4,7 @@ import { prismaAdapter } from "better-auth/adapters/prisma";
 import { username } from "better-auth/plugins";
 
 import { env } from "../env";
+import { mailer } from "./mailer";
 import { prisma } from "./prisma";
 
 export const auth = betterAuth({
@@ -13,6 +14,10 @@ export const auth = betterAuth({
   }),
   emailAndPassword: {
     enabled: true,
+    revokeSessionsOnPasswordReset: true,
+    sendResetPassword: async ({ user, url }) => {
+      await mailer.sendPasswordResetLinkEmail(user.email, url);
+    },
     changePassword: {
       enabled: true,
     },

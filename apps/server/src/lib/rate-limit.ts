@@ -1,6 +1,7 @@
 import type { MiddlewareHandler } from "hono";
 
 import { RedisClient } from "bun";
+import { createHash } from "node:crypto";
 
 import type { AuthzVariables } from "./authz";
 
@@ -45,6 +46,8 @@ export type RateLimiter = {
   consume: (key: string) => Promise<{ allowed: true } | { allowed: false; retryAfterMs: number }>;
 };
 
+type MissingKeyBehavior = "unauthorized" | "skip";
+
 export function createRateLimiter({
   capacity,
   windowMs,
@@ -78,13 +81,33 @@ export const presignRateLimiter = createRateLimiter({
   keyPrefix: "rl:presign:",
 });
 
+export const resetPasswordRateLimiter = createRateLimiter({
+  capacity: 3,
+  windowMs: 15 * 60_000,
+  keyPrefix: "rl:reset:",
+});
+
+export function resetPasswordEmailRateLimitKey(email: string): string {
+  const normalized = email.trim().toLowerCase();
+  return createHash("sha256").update(normalized).digest("hex");
+}
+
 export function rateLimit(
   limiter: RateLimiter,
-  keyFn: (c: Parameters<MiddlewareHandler<{ Variables: AuthzVariables }>>[0]) => string | undefined,
+  keyFn: (
+    c: Parameters<MiddlewareHandler<{ Variables: AuthzVariables }>>[0],
+  ) => string | undefined | Promise<string | undefined>,
+  options?: {
+    onMissingKey?: MissingKeyBehavior;
+  },
 ): MiddlewareHandler<{ Variables: AuthzVariables }> {
+  const onMissingKey = options?.onMissingKey ?? "unauthorized";
   return async (c, next) => {
-    const key = keyFn(c);
+    const key = await keyFn(c);
     if (!key) {
+      if (onMissingKey === "skip") {
+        return next();
+      }
       return c.json({ error: "Unauthorized" }, 401);
     }
     const result = await limiter.consume(key);

@@ -166,6 +166,17 @@ export function LoginForm({ onSwitch }: { onSwitch: () => void }) {
               );
             }}
           />
+          <div className="-mt-1 flex justify-end">
+            <button
+              type="button"
+              onClick={() => {
+                void navigate({ to: "/forgot-password" });
+              }}
+              className="text-xs text-primary underline-offset-2 hover:underline"
+            >
+              Forgot password?
+            </button>
+          </div>
 
           {formError && (
             <p className="text-xs text-destructive" role="alert">

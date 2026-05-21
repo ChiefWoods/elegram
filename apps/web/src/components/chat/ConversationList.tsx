@@ -104,7 +104,7 @@ export function ConversationList({
               </button>
             </ContextMenuTrigger>
             <ContextMenuContent className="min-w-40">
-              <ContextMenuItem onSelect={() => toggle(c.id)}>
+              <ContextMenuItem onSelect={() => toggle(c.id)} className="cursor-pointer">
                 {isPinned ? (
                   <>
                     <PinOff />

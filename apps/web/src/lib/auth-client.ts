@@ -7,6 +7,9 @@ import { env } from "./env";
 const authClient = createAuthClient({
   baseURL: env.VITE_SERVER_URL,
   basePath: "/api/auth",
+  fetchOptions: {
+    credentials: "include",
+  },
   plugins: [passkeyClient(), usernameClient()],
 });
 

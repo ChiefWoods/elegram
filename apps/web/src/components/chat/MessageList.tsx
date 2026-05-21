@@ -5,6 +5,7 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from "@workspace/ui/components/context-menu";
+import { Dialog, DialogContent, DialogTitle } from "@workspace/ui/components/dialog";
 import { CheckCheck, ChevronDown, Copy, FileText, Pencil, Trash2 } from "lucide-react";
 import {
   Fragment,
@@ -80,7 +81,13 @@ export function DayDivider({ label, onClick }: { label: string; onClick?: () => 
   );
 }
 
-export function IncomingBubble({ message }: { message: Message }) {
+export function IncomingBubble({
+  message,
+  onOpenImage,
+}: {
+  message: Message;
+  onOpenImage: (url: string) => void;
+}) {
   if (message.deleted) {
     return (
       <TombstoneRow align="start" avatarName={message.authorName} showAvatar={message.showAvatar} />
@@ -100,7 +107,7 @@ export function IncomingBubble({ message }: { message: Message }) {
           {message.showAuthor && (
             <div className="mb-0.5 text-xs font-semibold text-primary">{message.authorName}</div>
           )}
-          <AttachmentPreview message={message} />
+          <AttachmentPreview message={message} onOpenImage={onOpenImage} />
           {message.body && (
             <div className="wrap-break-word whitespace-pre-wrap">{message.body}</div>
           )}
@@ -120,10 +127,12 @@ export function OutgoingBubble({
   message,
   onEdit,
   onDelete,
+  onOpenImage,
 }: {
   message: Message;
   onEdit: (id: string) => void;
   onDelete: (id: string) => void;
+  onOpenImage: (url: string) => void;
 }) {
   if (message.deleted) {
     return <TombstoneRow align="end" />;
@@ -135,7 +144,7 @@ export function OutgoingBubble({
           message.isLastInRun ? "rounded-br-md" : ""
         }`}
       >
-        <AttachmentPreview message={message} />
+        <AttachmentPreview message={message} onOpenImage={onOpenImage} />
         {message.body && <div className="wrap-break-word whitespace-pre-wrap">{message.body}</div>}
       </div>
       {message.isLastInRun && (
@@ -186,15 +195,27 @@ export function OutgoingBubble({
   );
 }
 
-function AttachmentPreview({ message }: { message: Message }) {
+function AttachmentPreview({
+  message,
+  onOpenImage,
+}: {
+  message: Message;
+  onOpenImage: (url: string) => void;
+}) {
   if (!message.attachmentUrl) return null;
   if (isImageMime(message.attachmentMime)) {
     return (
-      <img
-        src={message.attachmentUrl}
-        alt="Attachment"
-        className="mb-1 max-h-72 rounded-lg object-cover"
-      />
+      <button
+        type="button"
+        onClick={() => onOpenImage(message.attachmentUrl!)}
+        className="mb-1 block cursor-zoom-in rounded-lg"
+      >
+        <img
+          src={message.attachmentUrl}
+          alt="Attachment"
+          className="max-h-72 rounded-lg object-cover"
+        />
+      </button>
     );
   }
   const attachmentSize = formatAttachmentSize(message.attachmentSize);
@@ -307,6 +328,7 @@ export function MessageList({
   const shouldStickToBottomRef = useRef(true);
   const [showFab, setShowFab] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
 
   const invalidate = (): void => {
     void queryClient.invalidateQueries({ queryKey: ["messages", conversationId] });
@@ -475,9 +497,10 @@ export function MessageList({
                       message={m}
                       onEdit={(id) => setEditingId(id)}
                       onDelete={(id) => deleteMutation.mutate(id)}
+                      onOpenImage={setLightboxUrl}
                     />
                   ) : (
-                    <IncomingBubble message={m} />
+                    <IncomingBubble message={m} onOpenImage={setLightboxUrl} />
                   )}
                 </div>
               </Fragment>
@@ -497,6 +520,21 @@ export function MessageList({
       >
         <ChevronDown className="size-5" />
       </button>
+      <Dialog open={lightboxUrl !== null} onOpenChange={(open) => !open && setLightboxUrl(null)}>
+        <DialogContent
+          showCloseButton={false}
+          className="w-auto gap-0 border-0 bg-transparent p-0 shadow-none ring-0"
+        >
+          <DialogTitle className="sr-only">Image preview</DialogTitle>
+          {lightboxUrl && (
+            <img
+              src={lightboxUrl}
+              alt="Attachment preview"
+              className="block max-h-[90dvh] max-w-[95dvw] rounded-lg object-contain"
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

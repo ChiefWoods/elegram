@@ -63,8 +63,13 @@ export function ChatHeader({
     <div
       role="button"
       tabIndex={0}
-      onClick={onToggleInfo}
+      onClick={(e) => {
+        if (!e.currentTarget.contains(e.target as Node)) return;
+        if (dateOpen) return;
+        onToggleInfo?.();
+      }}
       onKeyDown={(e) => {
+        if (dateOpen) return;
         if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
           onToggleInfo?.();
@@ -135,7 +140,7 @@ export function ChatHeader({
         </>
       )}
       <Dialog open={dateOpen} onOpenChange={setDateOpen}>
-        <DialogContent className="w-auto p-0 sm:max-w-fit">
+        <DialogContent className="w-auto p-0 sm:max-w-fit" onClick={(e) => e.stopPropagation()}>
           <DialogHeader className="px-4 pt-4">
             <DialogTitle>
               {selectedDate

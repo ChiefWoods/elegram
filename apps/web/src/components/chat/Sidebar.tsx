@@ -6,6 +6,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@workspace/ui/components/dropdown-menu";
+import { Kbd } from "@workspace/ui/components/kbd";
 import { ResizablePanel } from "@workspace/ui/components/resizable";
 import { Spinner } from "@workspace/ui/components/spinner";
 import {
@@ -598,6 +599,7 @@ export function Sidebar({
                 >
                   {isDark ? <Sun className="size-4" /> : <Moon className="size-4" />}
                   {isDark ? "Light mode" : "Dark mode"}
+                  <Kbd>D</Kbd>
                 </DropdownMenuItem>
                 <DropdownMenuItem onSelect={handleLogout} className="cursor-pointer">
                   <LogOut className="size-4" />

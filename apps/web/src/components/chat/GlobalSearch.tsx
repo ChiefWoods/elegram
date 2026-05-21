@@ -5,6 +5,7 @@ import {
   InputGroupButton,
   InputGroupInput,
 } from "@workspace/ui/components/input-group";
+import { Kbd } from "@workspace/ui/components/kbd";
 import { Separator } from "@workspace/ui/components/separator";
 import { Spinner } from "@workspace/ui/components/spinner";
 import { Search, X } from "lucide-react";
@@ -44,8 +45,8 @@ export function GlobalSearch({
         }}
         placeholder="Search"
       />
-      {value.length > 0 && (
-        <InputGroupAddon align="inline-end">
+      <InputGroupAddon align="inline-end">
+        {value.length > 0 ? (
           <InputGroupButton
             size="icon-xs"
             aria-label="Clear search"
@@ -56,8 +57,10 @@ export function GlobalSearch({
           >
             <X />
           </InputGroupButton>
-        </InputGroupAddon>
-      )}
+        ) : (
+          <Kbd>/</Kbd>
+        )}
+      </InputGroupAddon>
     </InputGroup>
   );
 }

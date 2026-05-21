@@ -29,7 +29,11 @@
     "docker:test:up": "docker compose -f docker-compose.test.yml up -d",
     "docker:test:down": "docker compose -f docker-compose.test.yml down",
     "docker:test:start": "docker compose -f docker-compose.test.yml start",
-    "docker:test:stop": "docker compose -f docker-compose.test.yml stop"
+    "docker:test:stop": "docker compose -f docker-compose.test.yml stop",
+    "docker:prod:up": "docker compose -f docker-compose.prod.yml up -d",
+    "docker:prod:down": "docker compose -f docker-compose.prod.yml down",
+    "docker:prod:start": "docker compose -f docker-compose.prod.yml start",
+    "docker:prod:stop": "docker compose -f docker-compose.prod.yml stop"
   },
   "dependencies": {
     "@better-auth/passkey": "^1.6.10",

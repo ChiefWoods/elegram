@@ -1,0 +1,12 @@
+services:
+  web:
+    image: elegram-web:local
+    build:
+      context: ../..
+      dockerfile: apps/web/Dockerfile
+      args:
+        VITE_SERVER_URL: ${VITE_SERVER_URL:?Set VITE_SERVER_URL in .env.production}
+    ports:
+      - "8080:80"
+    environment:
+      PORT: "80"

@@ -6,6 +6,8 @@ import { username } from "better-auth/plugins";
 import { env } from "../env";
 import { prisma } from "./prisma";
 
+const isProduction = process.env.NODE_ENV === "production";
+
 export const auth = betterAuth({
   basePath: "/api/auth",
   database: prismaAdapter(prisma, {
@@ -21,6 +23,14 @@ export const auth = betterAuth({
   rateLimit: {
     window: 60,
     max: 10,
+  },
+  advanced: {
+    defaultCookieAttributes: isProduction
+      ? {
+          sameSite: "none",
+          secure: true,
+        }
+      : undefined,
   },
   trustedOrigins: [env.CORS_ORIGIN],
 });

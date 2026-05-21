@@ -18,7 +18,7 @@
     "format:check": "oxfmt --check --no-error-on-unmatched-pattern",
     "typecheck": "tsc --noEmit",
     "doctor": "bunx react-doctor",
-    "preview": "vite preview",
+    "preview": "vite preview --port 8080",
     "generate-routes": "tsr generate",
     "docker:build": "docker compose --env-file .env.production build",
     "docker:run": "docker compose --env-file .env.production up"

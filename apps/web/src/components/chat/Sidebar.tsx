@@ -7,7 +7,6 @@ import {
   DropdownMenuTrigger,
 } from "@workspace/ui/components/dropdown-menu";
 import { Kbd } from "@workspace/ui/components/kbd";
-import { ResizablePanel } from "@workspace/ui/components/resizable";
 import { Spinner } from "@workspace/ui/components/spinner";
 import {
   ArrowLeft,
@@ -564,10 +563,7 @@ export function Sidebar({
   };
 
   return (
-    <ResizablePanel
-      defaultSize={320}
-      className="relative flex w-80 shrink-0 flex-col border-r bg-sidebar text-sidebar-foreground"
-    >
+    <div className="relative flex h-full min-w-0 flex-col bg-sidebar text-sidebar-foreground">
       {view === "chats" ? (
         <>
           <header className="relative flex items-center gap-2 p-3">
@@ -709,6 +705,6 @@ export function Sidebar({
           }}
         />
       )}
-    </ResizablePanel>
+    </div>
   );
 }

@@ -13,7 +13,7 @@ import {
   InputGroupButton,
   InputGroupInput,
 } from "@workspace/ui/components/input-group";
-import { Search, X, Calendar as CalendarIcon } from "lucide-react";
+import { ArrowLeft, Search, X, Calendar as CalendarIcon } from "lucide-react";
 import { useEffect, useImperativeHandle, useRef, useState, type Ref } from "react";
 
 import { InitialsAvatar } from "@/components/common/InitialsAvatar";
@@ -28,6 +28,7 @@ export function ChatHeader({
   subtitle,
   onJumpToDate,
   onToggleInfo,
+  onBack,
   ref,
 }: {
   name: string;
@@ -35,6 +36,7 @@ export function ChatHeader({
   subtitle: string;
   onJumpToDate?: (date: Date) => void;
   onToggleInfo?: () => void;
+  onBack?: () => void;
   ref?: Ref<ChatHeaderHandle>;
 }) {
   const [searchMode, setSearchMode] = useState(false);
@@ -77,6 +79,19 @@ export function ChatHeader({
       }}
       className="flex h-14 shrink-0 cursor-pointer items-center gap-3 border-b bg-muted px-4"
     >
+      {onBack && (
+        <button
+          type="button"
+          aria-label="Back to chats"
+          onClick={(e) => {
+            e.stopPropagation();
+            onBack();
+          }}
+          className="grid size-9 shrink-0 place-items-center rounded-md text-muted-foreground hover:text-foreground"
+        >
+          <ArrowLeft className="size-5" />
+        </button>
+      )}
       <InitialsAvatar name={name} imageUrl={imageUrl} size="sm" />
       {searchMode ? (
         <>

@@ -9,11 +9,15 @@ export function DMInfoPanel({
   onClose,
   name,
   username,
+  status,
+  imageUrl,
   bio,
 }: {
   onClose: () => void;
   name: string;
   username: string;
+  status: string;
+  imageUrl?: string | null;
   bio?: string;
 }) {
   return (
@@ -26,7 +30,7 @@ export function DMInfoPanel({
       </PanelHeader>
 
       <div className="flex-1 overflow-y-auto px-6 py-7">
-        <ProfileIdentity displayName={name} name={name} status="online" />
+        <ProfileIdentity displayName={name} name={name} status={status} imageUrl={imageUrl} />
 
         <ul className="mt-7 space-y-4">
           <DetailRow icon={AtSign} value={username} label="Username" />

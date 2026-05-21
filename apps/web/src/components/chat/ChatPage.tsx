@@ -23,6 +23,7 @@ import { useSession } from "@/lib/auth-client";
 import {
   CURRENT_USER_LABEL,
   dmPeerProfile,
+  presenceLabel,
   toConversationSummary,
   toGroupMembers,
   toMessageList,
@@ -112,6 +113,7 @@ export function ChatPage({
 
   const detail = conversationQuery.data?.conversation;
   const isGroup = detail?.isGroup ?? false;
+  const peer = detail ? dmPeerProfile(detail, meId) : null;
 
   const messages = useMemo(() => {
     const dtos = (messagesQuery.data?.pages ?? []).flatMap((p) => p.messages);
@@ -126,20 +128,16 @@ export function ChatPage({
   const headerSubtitle = detail
     ? isGroup
       ? `${detail.members.length} members`
-      : (() => {
-          const peerId = detail.members.find((m) => m.userId !== meId)?.userId;
-          return peerId && online.has(peerId) ? "online" : "last seen recently";
-        })()
+      : presenceLabel(Boolean(peer?.id && online.has(peer.id)), peer?.lastSeenAt ?? null)
     : "";
   const headerImageUrl = detail
     ? isGroup
       ? detail.avatarKey
         ? uploadUrl(detail.avatarKey)
         : null
-      : (() => {
-          const peerAvatarKey = detail.members.find((m) => m.userId !== meId)?.user.avatarKey;
-          return peerAvatarKey ? uploadUrl(peerAvatarKey) : null;
-        })()
+      : peer?.avatarKey
+        ? uploadUrl(peer.avatarKey)
+        : null
     : null;
 
   const selectConversation = (id: string): void => {
@@ -254,7 +252,12 @@ export function ChatPage({
                   <DMInfoPanel
                     onClose={() => setInfoOpen(false)}
                     name={headerName}
-                    username={dmPeerProfile(detail, meId).username}
+                    username={peer?.username ?? ""}
+                    status={presenceLabel(
+                      Boolean(peer?.id && online.has(peer.id)),
+                      peer?.lastSeenAt ?? null,
+                    )}
+                    imageUrl={headerImageUrl}
                   />
                 )}
               </InlineSheet>

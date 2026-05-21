@@ -17,11 +17,29 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 export const CURRENT_USER_LABEL = "You";
 
 function formatLastSeen(lastSeenAt: string | null): string {
-  if (!lastSeenAt) return "offline";
-  const diff = Date.now() - new Date(lastSeenAt).getTime();
+  if (!lastSeenAt) return "last seen unavailable";
+  const seen = new Date(lastSeenAt);
+  const now = new Date();
+  const diff = now.getTime() - seen.getTime();
+  if (diff < 60 * 1000) return "last seen just now";
   if (diff < 60 * 60 * 1000) return "last seen recently";
-  if (diff < DAY_MS) return "last seen today";
-  return "last seen recently";
+
+  const sameDay = now.toDateString() === seen.toDateString();
+  if (sameDay) {
+    return `last seen today at ${seen.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}`;
+  }
+
+  const yesterday = new Date(now.getTime() - DAY_MS);
+  if (yesterday.toDateString() === seen.toDateString()) {
+    return `last seen yesterday at ${seen.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}`;
+  }
+
+  return `last seen ${seen.toLocaleDateString([], { month: "short", day: "numeric" })}`;
+}
+
+export function presenceLabel(online: boolean, lastSeenAt: string | null): string {
+  if (online) return "online";
+  return formatLastSeen(lastSeenAt);
 }
 
 function dmPeer(conversation: { members: { userId: string }[] }, meId: string) {
@@ -65,8 +83,11 @@ export function dmPeerProfile(conversation: ConversationDetailDTO, meId: string)
   const peer = dmPeer(conversation, meId);
   const user = conversation.members.find((m) => m.userId === peer?.userId)?.user;
   return {
+    id: peer?.userId ?? "",
     name: user?.displayUsername ?? "Unknown",
     username: user?.username ?? "",
+    avatarKey: user?.avatarKey ?? null,
+    lastSeenAt: user?.lastSeenAt ?? null,
   };
 }
 

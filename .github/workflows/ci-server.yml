@@ -31,6 +31,7 @@ env:
   DATABASE_URL: postgresql://postgres:postgres@localhost:55432/elegram_test
   BETTER_AUTH_SECRET: test-secret
   BETTER_AUTH_URL: http://localhost:3000
+  RP_ID: localhost
   CORS_ORIGIN: http://localhost:5173
   S3_ENDPOINT: http://localhost:59000
   S3_REGION: us-east-1

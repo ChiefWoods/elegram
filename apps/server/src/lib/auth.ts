@@ -19,7 +19,13 @@ export const auth = betterAuth({
       enabled: true,
     },
   },
-  plugins: [passkey(), username()],
+  plugins: [
+    passkey({
+      rpID: env.RP_ID,
+      rpName: "Elegram",
+    }),
+    username(),
+  ],
   rateLimit: {
     window: 60,
     max: 10,
